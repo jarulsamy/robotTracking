@@ -1,11 +1,14 @@
 import sys
-sys.path.insert(0, 'C:\Python27\myro')
+sys.path.insert(0, 'E:\Python27\myro')
 from myro import *
 import cv2
 import numpy as np
 import urllib
-
+### Inital Variable Decleration ###
+kernel = np.ones((5,5), np.uint8)
 origPic = cv2.imread("img.jpg")
+maxContour = 0
+### Inital Variable Decleration ###
 
 ### GOOD COLOR SPACES ###
 # HSV
@@ -15,12 +18,41 @@ origPic = cv2.imread("img.jpg")
 #
 redLower = (0, 0, 200)
 redUpper = (30, 100, 255)
-chassisPic = cv2.cvtColor(origPic, cv2.COLOR_BGR2HLS)
-mask = cv2.inRange(chassisPic, redLower, redUpper)
-mask = cv2.erode(mask, None, iterations=2)
-mask = cv2.dilate(mask, None, iterations=2)
+altColorSpaceImg = cv2.cvtColor(origPic, cv2.COLOR_BGR2HLS)
+blurredImg = cv2.GaussianBlur(altColorSpaceImg, (11, 11), 10) #Blurs image to deal with noise
+blurredImg = cv2.bilateralFilter(blurredImg, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
+mask = cv2.inRange(blurredImg, redLower, redUpper)
+mask = cv2.erode(mask, kernel, iterations=2)
+mask = cv2.dilate(mask, kernel, iterations=2)
+### Mask Stuff END ###
 
-cv2.imshow("New", mask)
-cv2.imshow("Old", chassisPic)
+### Contour Stuff ###
+im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
+cnt = contours[0]
+cv2.drawContours(mask, contours, -1, (0,0,255), 2) #Draw countours on ALT Image
+# Finds Largest blob
+
+for contour in contours:
+	contourSize = cv2.contourArea(cnt)
+	if contourSize > maxContour:
+		maxContour = contourSize
+		maxContourData = contour
+
+areaMask = np.zeros_like(mask)
+
+cv2.fillPoly(areaMask,[maxContourData],1) # Draws new areaMask onto new image
+
+R,G,B = cv2.split(blurredImg) #Splits image in to RGB Values
+# Creates solid black image + mask
+finalImage = np.zeros_like(blurredImg)
+finalImage[:,:,0] = np.multiply(R,areaMask)
+finalImage[:,:,1] = np.multiply(G,areaMask)
+finalImage[:,:,2] = np.multiply(B,areaMask)
+# Contour Stuff End ###
+
+### Show Images ###
+cv2.imshow('Mask',mask)
+cv2.imshow('Alternative Color Space Image', altColorSpaceImg)
+cv2.imshow('Final',finalImage)
 cv2.waitKey(0)
-cv2.destroyAllWindows()
+### Show Images END ###
