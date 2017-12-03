@@ -4,7 +4,28 @@ import numpy as np
 
 maxCountour = 0 #DO NOT DELETE ME
 
+### Variables for click_and_crop ###
+mousePoint = []
+cropping = False
+### Variables for click_and_crop ###
+
+
 class KaicongVideo(KaicongInput):
+
+    ### Mouse point Drawing ###
+    def click_and_crop(event, x, y, flags, param):
+    	global mousePoint, cropping
+    	if event == cv2.EVENT_LBUTTONDOWN:
+    		print('foo')
+    		mousePoint = [(x, y)]
+    		cropping = True
+    		mousePoint.append((x, y))
+    		cropping = False
+
+    cv2.namedWindow("Final")
+    cv2.setMouseCallback("Final", click_and_crop)
+    ### Mouse Point Drawing End ###
+
     PACKET_SIZE = 1024
     URI = "http://%s:81/livestream.cgi?user=%s&pwd=%s&streamid=3&audio=1&filename="
 
@@ -87,8 +108,13 @@ if __name__ == "__main__":
         ### Show Images ###
         cv2.imshow('Mask',mask)
         cv2.imshow('Alternative Color Space Image', altColorSpaceImg)
-        cv2.imshow('Final',finalImage)
+        #cv2.imshow('Final',finalImage)
 
+        if mousePoint == []:
+            cv2.imshow('Final',finalImage)
+        else:
+            cv2.rectangle(finalImage, mousePoint[0], mousePoint[1], (0, 255, 0), 2)
+    	cv2.imshow("Final", finalImage)
         ### Show Images END ###
 
         # Note: waitKey() actually pushes the image out to screen
