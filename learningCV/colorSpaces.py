@@ -10,7 +10,8 @@ mousePoint = []
 cropping = False
 ### Variables for click_and_crop ###
 
-### Mouse point Drawing ###
+	# Mouse point Drawing
+
 def click_and_crop(event, x, y, flags, param):
 	# grab references to the global variables
 	global mousePoint, cropping
