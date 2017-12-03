@@ -7,6 +7,7 @@ mousePoint = []
 cropping = False
 ### Variables for click_and_crop ###
 
+# test change
 
 class KaicongVideo(KaicongInput):
     global maxContour, maxContourData
