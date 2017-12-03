@@ -1,9 +1,33 @@
 import sys
-sys.path.insert(0, 'E:\Python27\myro')
-from myro import *
+#sys.path.insert(0, 'E:\Python27\myro')
+#from myro import *
 import cv2
 import numpy as np
 import urllib
+import argparse
+### Variables for click_and_crop ###
+mousePoint = []
+cropping = False
+### Variables for click_and_crop ###
+
+### Mouse point Drawing ###
+def click_and_crop(event, x, y, flags, param):
+	# grab references to the global variables
+	global mousePoint, cropping
+	if event == cv2.EVENT_LBUTTONDOWN:
+		print('foo')
+		mousePoint = [(x, y)]
+		cropping = True
+		mousePoint.append((x, y))
+		cropping = False
+		# draw a rectangle around the region of interest
+		cv2.rectangle(finalImage, mousePoint[0], mousePoint[1], (0, 255, 0), 2)
+		cv2.imshow("Final", finalImage)
+
+cv2.namedWindow("Final")
+cv2.setMouseCallback("Final", click_and_crop)
+
+### Mouse Point Drawing End ###
 ### Inital Variable Decleration ###
 kernel = np.ones((5,5), np.uint8)
 origPic = cv2.imread("img.jpg")
