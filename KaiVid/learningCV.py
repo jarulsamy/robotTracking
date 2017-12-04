@@ -3,23 +3,26 @@ import cv2
 import numpy as np
 
 # Color space info:
-# Good: YUV LUV
-# Okay: HSV HLS LAB
+# Good: YUV LUV YCR_CV
+# Okay: HSV HLS LAB Most of these have issues with noise
 # Bad: RGB BGR
 
 ### Variables for click_and_crop ###
 mousePoint = []
 boardPoint = []
 cropping = False
-### Variables for click_and_crop ###
 ix, iy = -1, -1
+### Variables for click_and_crop ###
+
 class KaicongVideo(KaicongInput):
+    ### Initial Variable Decleration ###
     global maxContourChassis, maxContourDataChassis, maxContourBoard, maxContourDataBoard, ix, iy
     maxContourChassis = 0
     maxContourDataChassis = 0
-
     maxContourBoard = 0
     maxContourDataBoard = 0
+    ### Initial Variable Decleration ###
+
     ### Mouse point Drawing ###
     def click_and_crop(event, x, y, flags, param):
     	global mousePoint, cropping, boardPoints
@@ -59,8 +62,8 @@ class KaicongVideo(KaicongInput):
 
     def handle(self, data):
         self.bytes += data
-        b = self.bytes.find('\xff\xd9')
         a = self.bytes.find('\xff\xd8')
+        b = self.bytes.find('\xff\xd9')
         if a!=-1 and b!=-1:
             jpg = self.bytes[a:b+2]
             self.bytes = self.bytes[b+2:]
@@ -82,7 +85,7 @@ if __name__ == "__main__":
         redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
 
         greenUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for board ID
-        greenLower = np.array([0, 0, 200], dtype=np.uint8) #Thresholds for board ID
+        greenLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for board ID
 
         #redUpper = np.array([120, 150, 255], dtype=np.uint8) #Thresholds for robot ID
         kernel = np.ones((5,5), np.uint8)
@@ -134,15 +137,13 @@ if __name__ == "__main__":
             contourSizeChassis = cv2.contourArea(cntChassis)
             if contourSizeChassis > maxContourChassis:
                 maxContourChassis = contourSizeChassis
-                #print(contour)
                 maxContourDataChassis = contourChassis
-
+            # Has issues if put togethor
         for contourBoard in contoursBoard:
             global maxContourBoard, contourSizeBoard, maxContourDataBoard
             contourSizeBoard = cv2.contourArea(cntBoard)
             if contourSizeBoard > maxContourBoard:
                 maxContourBoard = contourSizeBoard
-                #print(contour)
                 maxContourDataBoard = contourBoard
 
         areaMaskChassis = np.zeros_like(maskChassis)
@@ -151,6 +152,7 @@ if __name__ == "__main__":
         cv2.fillPoly(areaMaskChassis,[maxContourDataChassis],1) # Draws new areaMask onto new image
         cv2.fillPoly(areaMaskBoard,[maxContourDataBoard],1) # Draws new areaMask onto new image
 
+        # Somewhat unnecessary and problomatic code, can be reworked in the future
         Rc,Gc,Bc = cv2.split(blurredImgChassis) #Splits image in to RGB Values
         Rb,Gb,Bb = cv2.split(blurredImgBoard) #Splits image in to RGB Values
         # Creates solid black image + mask
@@ -158,6 +160,10 @@ if __name__ == "__main__":
         finalImage[:,:,0] = np.multiply(Rc,areaMaskChassis)
         finalImage[:,:,1] = np.multiply(Gc,areaMaskChassis)
         finalImage[:,:,2] = np.multiply(Bc,areaMaskChassis)
+
+        finalImage[:,:,0] = np.multiply(Rb,areaMaskBoard)
+        finalImage[:,:,1] = np.multiply(Gb,areaMaskBoard)
+        finalImage[:,:,2] = np.multiply(Bb,areaMaskBoard)
         # Contour Stuff End ###
 
         ### Show Images ###
@@ -204,7 +210,6 @@ if __name__ == "__main__":
         cv2.rectangle(origPic, (firstCxC,firstCyC), (secondCxC,secondCyC), (255,0,0), -1) # Draws Centroid Chassis
         cv2.rectangle(origPic, (firstCxB,firstCyB), (secondCxB,secondCyB), (0,0,255), -1) # Draws Centroid Board
 
-        cv2.imshow('Original', origPic)
         # Note: waitKey() actually pushes the image out to screen
         if cv2.waitKey(1) ==27:
             exit(0)
