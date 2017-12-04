@@ -59,8 +59,8 @@ class KaicongVideo(KaicongInput):
 
     def handle(self, data):
         self.bytes += data
-        a = self.bytes.find('\xff\xd8')
         b = self.bytes.find('\xff\xd9')
+        a = self.bytes.find('\xff\xd8')
         if a!=-1 and b!=-1:
             jpg = self.bytes[a:b+2]
             self.bytes = self.bytes[b+2:]
@@ -81,8 +81,8 @@ if __name__ == "__main__":
         redUpper = np.array([110, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
         redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
 
-        greenUpper = np.array([255, 0, 0], dtype=np.uint8) #Thresholds for board ID
-        greenLower = np.array([255, 0, 0], dtype=np.uint8) #Thresholds for board ID
+        greenUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for board ID
+        greenLower = np.array([0, 0, 200], dtype=np.uint8) #Thresholds for board ID
 
         #redUpper = np.array([120, 150, 255], dtype=np.uint8) #Thresholds for robot ID
         kernel = np.ones((5,5), np.uint8)
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         #YUV and LUV Work really well here, currenty sets everything robot to white
         #Else set to black
         chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detectionS
-        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2HSV) # Converts to HLS for board detection
+        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to HLS for board detection
 
         blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
         blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
@@ -122,10 +122,7 @@ if __name__ == "__main__":
         try:
             cntBoard = contoursBoard[1]
         except IndexError:
-            try:
-                cntBoard = contoursBoard[0]
-            except IndexError:
-                print('error')
+            cntBoard = contoursBoard[0]
 
 
         cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
@@ -158,15 +155,16 @@ if __name__ == "__main__":
         Rb,Gb,Bb = cv2.split(blurredImgBoard) #Splits image in to RGB Values
         # Creates solid black image + mask
         finalImage = np.zeros_like(blurredImgChassis)
-        finalImage[:,:,0] = np.multiply(R,areaMaskChassis)
-        finalImage[:,:,1] = np.multiply(G,areaMaskChassis)
-        finalImage[:,:,2] = np.multiply(B,areaMaskChassis)
+        finalImage[:,:,0] = np.multiply(Rc,areaMaskChassis)
+        finalImage[:,:,1] = np.multiply(Gc,areaMaskChassis)
+        finalImage[:,:,2] = np.multiply(Bc,areaMaskChassis)
         # Contour Stuff End ###
 
         ### Show Images ###
         #cv2.imshow('Final',finalImage)
         cv2.imshow('Chassis Mask', maskChassis)
         cv2.imshow('Chassis Image', chassisImg)
+        cv2.imshow('Board Image', boardImg)
         ### Show Images END ###
 
         ### Centroid Calculations ###
@@ -185,15 +183,27 @@ if __name__ == "__main__":
 
 
 
-        M = cv2.moments(cnt)
-        cx = int(M['m10']/M['m00'])
-        cy = int(M['m01']/M['m00'])
-        firstCx = cx - 10
-        firstCy = cy - 10
-        secondCx = cx + 10
-        secondCy = cy + 10
+        mChassis = cv2.moments(cntChassis)
+        mBoard = cv2.moments(cntBoard)
+        cxC = int(mChassis['m10']/mChassis['m00'])
+        cyC = int(mChassis['m01']/mChassis['m00'])
+
+        cxB = int(mBoard['m10']/mBoard['m00'])
+        cyB = int(mBoard['m01']/mBoard['m00'])
+        # Centroid Range Chassis
+        firstCxC = cxC - 10
+        firstCyC = cyC - 10
+        secondCxC = cxC + 10
+        secondCyC= cyC + 10
+        # Centroid Range Board
+        firstCxB = cxB - 10
+        firstCyB = cyB - 10
+        secondCxB = cxB + 10
+        secondCyB = cyB + 10
         # Draw Centorid
-        cv2.rectangle(origPic, (firstCx,firstCy), (secondCx,secondCy), (255,0,0), -1)
+        cv2.rectangle(origPic, (firstCxC,firstCyC), (secondCxC,secondCyC), (255,0,0), -1) # Draws Centroid Chassis
+        cv2.rectangle(origPic, (firstCxB,firstCyB), (secondCxB,secondCyB), (0,0,255), -1) # Draws Centroid Board
+
         cv2.imshow('Original', origPic)
         # Note: waitKey() actually pushes the image out to screen
         if cv2.waitKey(1) ==27:
