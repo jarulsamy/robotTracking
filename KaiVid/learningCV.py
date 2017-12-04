@@ -4,7 +4,7 @@ import numpy as np
 
 # Color space info:
 # Good: YUV LUV
-# Okay: HSV HLS
+# Okay: HSV HLS LAB
 # Bad: RGB BGR
 
 ### Variables for click_and_crop ###
@@ -75,8 +75,12 @@ if __name__ == "__main__":
 
     def show_video(jpg):
         ### Defining Inital Necessary Variables ###
-        redUpper = np.array([120, 150, 255], dtype=np.uint8) #Thresholds for robot ID
-        redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for robot ID
+        redUpper = np.array([110, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
+        redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
+
+        greenUpper = np.array([255, 0, 0], dtype=np.uint8) #Thresholds for board ID
+        greenLower = np.array([255, 0, 0], dtype=np.uint8) #Thresholds for board ID
+
         #redUpper = np.array([120, 150, 255], dtype=np.uint8) #Thresholds for robot ID
         kernel = np.ones((5,5), np.uint8)
 
@@ -84,26 +88,38 @@ if __name__ == "__main__":
         origPic = readColors
         #YUV and LUV Work really well here, currenty sets everything robot to white
         #Else set to black
-        altColorSpaceImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV
+        chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detectionS
+        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2HLS) # Converts to HLS for board detection
 
-        blurredImg = cv2.GaussianBlur(altColorSpaceImg, (11, 11), 10) #Blurs image to deal with noise
-        #blurredImg = cv2.medianBlur(blurredImg, 5) #Uses median blur to filter out even more noise
-        blurredImg = cv2.bilateralFilter(blurredImg, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
+        blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
+        blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
+
+        blurredImgBoard = cv2.GaussianBlur(boardImg, (11, 11), 10) #Blurs image to deal with noise
+        blurredImgBoard = cv2.bilateralFilter(blurredImgBoard, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
+
         ### Mask Stuff ###
-        mask = cv2.inRange(blurredImg, redLower, redUpper)
-    	mask = cv2.erode(mask, kernel, iterations=2)
-    	mask = cv2.dilate(mask, kernel, iterations=2)
+        maskChassis = cv2.inRange(blurredImgChassis, redLower, redUpper)
+    	maskChassis = cv2.erode(maskChassis, kernel, iterations=2)
+    	maskChassis = cv2.dilate(maskChassis, kernel, iterations=2)
+
+        maskBoard = cv2.inRange(blurredImBoard, greenLower, greenUpper)
+    	maskBoard = cv2.erode(maskBoard, kernel, iterations=2)
+    	maskBoard = cv2.dilate(maskBoard, kernel, iterations=2)
         ### Mask Stuff END ###
 
         ### Contour Stuff ###
-        im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
+        im2Chassis, contoursChassis, hierarchyChassis = cv2.findContours(maskChassis, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
+        im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
         # Try catch for contour issues on other color spaces
         try:
-            cnt = contours[1]
+            cntChassis = contoursChassis[1]
+            cntBoard = contoursBoard[1]
         except IndexError:
-            cnt = contours[0]
+            cntChassis = contoursChassis[0]
+            cntBoard = contoursBoard[0]
 
-        cv2.drawContours(altColorSpaceImg, contours, -1, (0,0,255), 2) #Draw countours on ALT Image
+        cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
+        cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
         # Finds Largest blob
 
         for contour in contours:
@@ -114,32 +130,37 @@ if __name__ == "__main__":
                 #print(contour)
                 maxContourData = contour
 
-        areaMask = np.zeros_like(mask)
-        cv2.fillPoly(areaMask,[maxContourData],1) # Draws new areaMask onto new image
+        areaMaskChassis = np.zeros_like(maskChassis)
+        cv2.fillPoly(areaMaskChassis,[maxContourData],1) # Draws new areaMask onto new image
 
-        R,G,B = cv2.split(blurredImg) #Splits image in to RGB Values
+        R,G,B = cv2.split(blurredImgChassis) #Splits image in to RGB Values
         # Creates solid black image + mask
-        finalImage = np.zeros_like(blurredImg)
-        finalImage[:,:,0] = np.multiply(R,areaMask)
-        finalImage[:,:,1] = np.multiply(G,areaMask)
-        finalImage[:,:,2] = np.multiply(B,areaMask)
+        finalImage = np.zeros_like(blurredImgChassis)
+        finalImage[:,:,0] = np.multiply(R,areaMaskChassis)
+        finalImage[:,:,1] = np.multiply(G,areaMaskChassis)
+        finalImage[:,:,2] = np.multiply(B,areaMaskChassis)
         # Contour Stuff End ###
 
         ### Show Images ###
         #cv2.imshow('Final',finalImage)
-        cv2.imshow('Mask', mask)
-        cv2.imshow('Alternative Color Space Image', altColorSpaceImg)
+        cv2.imshow('Chassis Mask', maskChassis)
+        cv2.imshow('Chassis Image', chassisImg)
         ### Show Images END ###
 
         ### Centroid Calculations ###
 
-        if mousePoint == [] and boardPoint == []:
+        if mousePoint == []:
             cv2.imshow('Original', origPic)
         else:
-            global ix, iy
             cv2.rectangle(origPic, mousePoint[0], mousePoint[1], (0, 255, 0), 10)
+            cv2.imshow("Original", origPic)
+
+        if boardPoint == []:
+            cv2.imshow('Original', origPic)
+        else:
             cv2.rectangle(origPic, boardPoint[0], boardPoint[1], (0, 255, 0), 10)
             cv2.imshow("Original", origPic)
+
 
 
         M = cv2.moments(cnt)
