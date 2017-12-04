@@ -14,9 +14,12 @@ cropping = False
 ### Variables for click_and_crop ###
 ix, iy = -1, -1
 class KaicongVideo(KaicongInput):
-    global maxContour, maxContourData, ix, iy
-    maxContour = 0
-    maxContourData = 0
+    global maxContourChassis, maxContourDataChassis, maxContourBoard, maxContourDataBoard, ix, iy
+    maxContourChassis = 0
+    maxContourDataChassis = 0
+
+    maxContourBoard = 0
+    maxContourDataBoard = 0
     ### Mouse point Drawing ###
     def click_and_crop(event, x, y, flags, param):
     	global mousePoint, cropping, boardPoints
@@ -89,7 +92,7 @@ if __name__ == "__main__":
         #YUV and LUV Work really well here, currenty sets everything robot to white
         #Else set to black
         chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detectionS
-        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2HLS) # Converts to HLS for board detection
+        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2HSV) # Converts to HLS for board detection
 
         blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
         blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
@@ -102,7 +105,7 @@ if __name__ == "__main__":
     	maskChassis = cv2.erode(maskChassis, kernel, iterations=2)
     	maskChassis = cv2.dilate(maskChassis, kernel, iterations=2)
 
-        maskBoard = cv2.inRange(blurredImBoard, greenLower, greenUpper)
+        maskBoard = cv2.inRange(blurredImgBoard, greenLower, greenUpper)
     	maskBoard = cv2.erode(maskBoard, kernel, iterations=2)
     	maskBoard = cv2.dilate(maskBoard, kernel, iterations=2)
         ### Mask Stuff END ###
@@ -113,27 +116,46 @@ if __name__ == "__main__":
         # Try catch for contour issues on other color spaces
         try:
             cntChassis = contoursChassis[1]
-            cntBoard = contoursBoard[1]
         except IndexError:
             cntChassis = contoursChassis[0]
-            cntBoard = contoursBoard[0]
+
+        try:
+            cntBoard = contoursBoard[1]
+        except IndexError:
+            try:
+                cntBoard = contoursBoard[0]
+            except IndexError:
+                print('error')
+
 
         cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
         cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
         # Finds Largest blob
 
-        for contour in contours:
-            global maxContour, contourSize, maxContourData
-            contourSize = cv2.contourArea(cnt)
-            if contourSize > maxContour:
-                maxContour = contourSize
+        for contourChassis in contoursChassis:
+            global maxContourChassis, contourSizeChassis, maxContourDataChassis
+            contourSizeChassis = cv2.contourArea(cntChassis)
+            if contourSizeChassis > maxContourChassis:
+                maxContourChassis = contourSizeChassis
                 #print(contour)
-                maxContourData = contour
+                maxContourDataChassis = contourChassis
+
+        for contourBoard in contoursBoard:
+            global maxContourBoard, contourSizeBoard, maxContourDataBoard
+            contourSizeBoard = cv2.contourArea(cntBoard)
+            if contourSizeBoard > maxContourBoard:
+                maxContourBoard = contourSizeBoard
+                #print(contour)
+                maxContourDataBoard = contourBoard
 
         areaMaskChassis = np.zeros_like(maskChassis)
-        cv2.fillPoly(areaMaskChassis,[maxContourData],1) # Draws new areaMask onto new image
+        areaMaskBoard = np.zeros_like(maskBoard)
 
-        R,G,B = cv2.split(blurredImgChassis) #Splits image in to RGB Values
+        cv2.fillPoly(areaMaskChassis,[maxContourDataChassis],1) # Draws new areaMask onto new image
+        cv2.fillPoly(areaMaskBoard,[maxContourDataBoard],1) # Draws new areaMask onto new image
+
+        Rc,Gc,Bc = cv2.split(blurredImgChassis) #Splits image in to RGB Values
+        Rb,Gb,Bb = cv2.split(blurredImgBoard) #Splits image in to RGB Values
         # Creates solid black image + mask
         finalImage = np.zeros_like(blurredImgChassis)
         finalImage[:,:,0] = np.multiply(R,areaMaskChassis)
