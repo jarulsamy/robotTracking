@@ -190,6 +190,17 @@ if __name__ == "__main__":
             cv2.imshow("Original", origPic)
 
 
+        contour_list = []
+        for contourChassis in contoursChassis:
+        	approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
+        	area = cv2.contourArea(contourChassis)
+        	if ((len(approx) > 2) & (area > 1000)):
+        		contour_list.append(contourChassis)
+
+
+        cv2.drawContours(chassisImg, contour_list, -1, (0,255,0), 2)
+        cv2.imshow('objects detected', chassisImg)
+
 
         mChassis = cv2.moments(cntChassis)
         mBoard = cv2.moments(cntBoard)
