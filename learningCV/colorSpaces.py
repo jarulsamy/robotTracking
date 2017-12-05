@@ -38,7 +38,8 @@ cv2.setMouseCallback("Final", click_and_crop)
 ### Mouse Point Drawing End ###
 ### Inital Variable Decleration ###
 kernel = np.ones((5,5), np.uint8)
-origPic = cv2.imread("multicolors.jpg")
+# origPic = cv2.imread("multicolors.jpg")
+origPic = cv2.imread("2.jpg")
 maxContour = 0
 ### Inital Variable Decleration ###
 
@@ -53,7 +54,7 @@ maxContour = 0
 greenUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for board ID
 greenLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for board ID
 
-altColorSpaceImg = cv2.cvtColor(origPic, cv2.COLOR_BGR2YCR_CB)
+altColorSpaceImg = cv2.cvtColor(origPic, cv2.COLOR_BGR2YUV)
 blurredImg = cv2.GaussianBlur(altColorSpaceImg, (11, 11), 10) #Blurs image to deal with noise
 blurredImg = cv2.bilateralFilter(blurredImg, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
 mask = cv2.inRange(blurredImg, greenLower, greenUpper)
@@ -64,7 +65,7 @@ mask = cv2.dilate(mask, kernel, iterations=2)
 ### Contour Stuff ###
 im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
 cnt = contours[0]
-cv2.drawContours(mask, contours, -1, (0,0,255), 2) #Draw countours on ALT Image
+# cv2.drawContours(mask, contours, -1, (0,0,255), 2) #Draw countours on ALT Image
 # Finds Largest blob
 
 for contour in contours:
@@ -85,10 +86,24 @@ finalImage[:,:,1] = np.multiply(G,areaMask)
 finalImage[:,:,2] = np.multiply(B,areaMask)
 # Contour Stuff End ###
 
+# sq = cv2.arcLength(cnt, True)
+# approx = cv2.approxPolyDP(cnt, 0.02 * sq, True)
+# print(approx)
+
+contour_list = []
+for contour in contours:
+	approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
+	area = cv2.contourArea(contour)
+	if ((len(approx) > 12) & (area > 1000)):
+		contour_list.append(contour)
+# Line 68
+cv2.drawContours(altColorSpaceImg, contour_list, -1, (0,0,255), 2)
+cv2.imshow('objects detected', altColorSpaceImg)
 ### Show Images ###
+#cv2.imshow('Approximation', approx)
 cv2.imshow('Original', origPic)
 cv2.imshow('Mask',mask)
-cv2.imshow('Alternative Color Space Image', altColorSpaceImg)
+#cv2.imshow('Alternative Color Space Image', altColorSpaceImg)
 cv2.imshow('Final',finalImage)
 cv2.waitKey(0)
 ### Show Images END ###
