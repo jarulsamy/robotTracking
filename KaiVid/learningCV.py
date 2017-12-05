@@ -125,8 +125,10 @@ if __name__ == "__main__":
         try:
             cntBoard = contoursBoard[1]
         except IndexError:
-            cntBoard = contoursBoard[0]
-
+            try:
+                cntBoard = contoursBoard[0]
+            except IndexError:
+                return 'problems'
 
         cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
         cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
@@ -152,7 +154,7 @@ if __name__ == "__main__":
         cv2.fillPoly(areaMaskChassis,[maxContourDataChassis],1) # Draws new areaMask onto new image
         cv2.fillPoly(areaMaskBoard,[maxContourDataBoard],1) # Draws new areaMask onto new image
 
-        # Somewhat unnecessary and problomatic code, can be reworked in the future
+        # Somewhat unnecessary and problamatic code, can be reworked in the future
         Rc,Gc,Bc = cv2.split(blurredImgChassis) #Splits image in to RGB Values
         Rb,Gb,Bb = cv2.split(blurredImgBoard) #Splits image in to RGB Values
         # Creates solid black image + mask
@@ -196,7 +198,7 @@ if __name__ == "__main__":
 
         cxB = int(mBoard['m10']/mBoard['m00'])
         cyB = int(mBoard['m01']/mBoard['m00'])
-        # Centroid Range Chassis
+        # Centroid Range Chassis Can be done more elegangantly
         firstCxC = cxC - 10
         firstCyC = cyC - 10
         secondCxC = cxC + 10
@@ -209,7 +211,7 @@ if __name__ == "__main__":
         # Draw Centorid
         cv2.rectangle(origPic, (firstCxC,firstCyC), (secondCxC,secondCyC), (255,0,0), -1) # Draws Centroid Chassis
         cv2.rectangle(origPic, (firstCxB,firstCyB), (secondCxB,secondCyB), (0,0,255), -1) # Draws Centroid Board
-
+        cv2.imshow('Original', origPic)
         # Note: waitKey() actually pushes the image out to screen
         if cv2.waitKey(1) ==27:
             exit(0)

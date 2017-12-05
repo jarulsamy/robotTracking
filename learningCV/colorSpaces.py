@@ -16,13 +16,20 @@ def click_and_crop(event, x, y, flags, param):
 	# grab references to the global variables
 	global mousePoint, cropping
 	if event == cv2.EVENT_LBUTTONDOWN:
-		print('foo')
 		mousePoint = [(x, y)]
 		cropping = True
 		mousePoint.append((x, y))
 		cropping = False
 		# draw a rectangle around the region of interest
 		cv2.rectangle(finalImage, mousePoint[0], mousePoint[1], (0, 255, 0), 2)
+		cv2.imshow("Final", finalImage)
+	if event == cv2.EVENT_RBUTTONDOWN:
+		print('it works')
+		boardPoint = [(x, y)]
+		cropping = True
+		boardPoint.append((x, y))
+		cropping = False
+		cv2.rectangle(finalImage, boardPoint[0], boardPoint[1], (0, 0, 255), 2)
 		cv2.imshow("Final", finalImage)
 
 cv2.namedWindow("Final")
@@ -31,7 +38,7 @@ cv2.setMouseCallback("Final", click_and_crop)
 ### Mouse Point Drawing End ###
 ### Inital Variable Decleration ###
 kernel = np.ones((5,5), np.uint8)
-origPic = cv2.imread("img.jpg")
+origPic = cv2.imread("multicolors.jpg")
 maxContour = 0
 ### Inital Variable Decleration ###
 
@@ -41,12 +48,15 @@ maxContour = 0
 # LUV
 # HLS
 #
-redLower = (0, 0, 200)
-redUpper = (30, 100, 255)
-altColorSpaceImg = cv2.cvtColor(origPic, cv2.COLOR_BGR2HLS)
+# redLower = (0, 0, 200)
+# redUpper = (30, 100, 255)
+greenUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for board ID
+greenLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for board ID
+
+altColorSpaceImg = cv2.cvtColor(origPic, cv2.COLOR_BGR2YCR_CB)
 blurredImg = cv2.GaussianBlur(altColorSpaceImg, (11, 11), 10) #Blurs image to deal with noise
 blurredImg = cv2.bilateralFilter(blurredImg, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
-mask = cv2.inRange(blurredImg, redLower, redUpper)
+mask = cv2.inRange(blurredImg, greenLower, greenUpper)
 mask = cv2.erode(mask, kernel, iterations=2)
 mask = cv2.dilate(mask, kernel, iterations=2)
 ### Mask Stuff END ###
@@ -76,6 +86,7 @@ finalImage[:,:,2] = np.multiply(B,areaMask)
 # Contour Stuff End ###
 
 ### Show Images ###
+cv2.imshow('Original', origPic)
 cv2.imshow('Mask',mask)
 cv2.imshow('Alternative Color Space Image', altColorSpaceImg)
 cv2.imshow('Final',finalImage)
