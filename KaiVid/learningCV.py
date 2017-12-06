@@ -87,15 +87,15 @@ if __name__ == "__main__":
         greenUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for board ID
         greenLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for board ID
 
-        #redUpper = np.array([120, 150, 255], dtype=np.uint8) #Thresholds for robot ID
         kernel = np.ones((5,5), np.uint8)
 
-        readColors = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR)
-        origPic = readColors
         #YUV and LUV Work really well here, currenty sets everything robot to white
         #Else set to black
+        readColors = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR)
+        origPic = readColors
+
         chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detectionS
-        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to HLS for board detection
+        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to XYZ for board detection, Sees colored light somehow ???
 
         blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
         blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
@@ -175,7 +175,6 @@ if __name__ == "__main__":
         cv2.imshow('Board Image', boardImg)
         ### Show Images END ###
 
-        ### Centroid Calculations ###
 
         if mousePoint == []:
             cv2.imshow('Original', origPic)
@@ -190,15 +189,16 @@ if __name__ == "__main__":
             cv2.imshow("Original", origPic)
 
 
+            ### Centroid Calculations ###
         contour_list = []
         for contourChassis in contoursChassis:
         	approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
         	area = cv2.contourArea(contourChassis)
-                print(area)
+
                 # Appends contours in size between 15000 and 17000 pixel area then draws them in greenLower
                 # Need to rework the mask image
         	if ((len(approx) > 2) & (area > 15000) & (area < 17000)):
-        		contour_list.append(contourChassis)
+        	       contour_list.append(contourChassis)
 
         cv2.drawContours(chassisImg, contour_list, -1, (0,255,0), 2)
         cv2.imshow('objects detected', chassisImg)
