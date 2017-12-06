@@ -130,7 +130,7 @@ if __name__ == "__main__":
             except IndexError:
                 return 'problems'
 
-        cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
+        #cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
         cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
         # Finds Largest blob
 
@@ -194,13 +194,14 @@ if __name__ == "__main__":
         for contourChassis in contoursChassis:
         	approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
         	area = cv2.contourArea(contourChassis)
-        	if ((len(approx) > 2) & (area > 1000)):
+                print(area)
+                # Appends contours in size between 15000 and 17000 pixel area then draws them in greenLower
+                # Need to rework the mask image
+        	if ((len(approx) > 2) & (area > 15000) & (area < 17000)):
         		contour_list.append(contourChassis)
-
 
         cv2.drawContours(chassisImg, contour_list, -1, (0,255,0), 2)
         cv2.imshow('objects detected', chassisImg)
-
 
         mChassis = cv2.moments(cntChassis)
         mBoard = cv2.moments(cntBoard)
