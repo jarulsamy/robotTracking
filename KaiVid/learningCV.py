@@ -32,14 +32,6 @@ class KaicongVideo(KaicongInput):
     		mousePoint.append((x, y))
     		cropping = False
 
-        if event == cv2.EVENT_RBUTTONDOWN:
-            print 'Defined Board Position'
-            boardPoint = [(x, y)]
-            cropping = True
-            boardPoint.append((x, y))
-            cropping = False
-            ix,iy = x,y
-            print(boardPoint)
 
     cv2.namedWindow("Original")
     cv2.setMouseCallback("Original", click_and_crop)
@@ -91,10 +83,10 @@ if __name__ == "__main__":
 
         #YUV and LUV Work really well here, currenty sets everything robot to white
         #Else set to black
-        readColors = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR)
-        origPic = readColors
+        readColors = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR) # Each new frame
+        origPic = readColors # Keeps an original unedited
 
-        chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detectionS
+        chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detection
         boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to XYZ for board detection, Sees colored light somehow ???
 
         blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
@@ -103,37 +95,38 @@ if __name__ == "__main__":
         blurredImgBoard = cv2.GaussianBlur(boardImg, (11, 11), 10) #Blurs image to deal with noise
         blurredImgBoard = cv2.bilateralFilter(blurredImgBoard, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
 
-        ### Mask Stuff ###
-        maskChassis = cv2.inRange(blurredImgChassis, redLower, redUpper)
-    	maskChassis = cv2.erode(maskChassis, kernel, iterations=2)
-    	maskChassis = cv2.dilate(maskChassis, kernel, iterations=2)
+        maskChassis = cv2.inRange(blurredImgChassis, redLower, redUpper) # Creates blob image based on threshold; redLower and redUpper
+    	maskChassis = cv2.erode(maskChassis, kernel, iterations=2) # Erodes to get rid of random specks
+    	maskChassis = cv2.dilate(maskChassis, kernel, iterations=2) # Dialates to get rid of random specks
 
-        maskBoard = cv2.inRange(blurredImgBoard, greenLower, greenUpper)
-    	maskBoard = cv2.erode(maskBoard, kernel, iterations=2)
-    	maskBoard = cv2.dilate(maskBoard, kernel, iterations=2)
-        ### Mask Stuff END ###
+        maskBoard = cv2.inRange(blurredImgBoard, greenLower, greenUpper) # Creates blob image based on threshold; greenLower and greenUpper
+    	maskBoard = cv2.erode(maskBoard, kernel, iterations=2) # Erodes to get rid of random specks
+    	maskBoard = cv2.dilate(maskBoard, kernel, iterations=2) # Dialates to get rid of random specks
 
-        ### Contour Stuff ###
         im2Chassis, contoursChassis, hierarchyChassis = cv2.findContours(maskChassis, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
         im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
-        # Try catch for contour issues on other color spaces
+
+        # Try catch for when there are 0 contours
         try:
             cntChassis = contoursChassis[1]
         except IndexError:
-            cntChassis = contoursChassis[0]
-
+            try:
+                cntChassis = contoursChassis[0]
+            except IndexError:
+                return 'Zero Contours'
         try:
             cntBoard = contoursBoard[1]
         except IndexError:
             try:
                 cntBoard = contoursBoard[0]
             except IndexError:
-                return 'problems'
+                return 'Zero Contours'
 
+            # Fix next 2 lines later
         #cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
-        cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
-        # Finds Largest blob
-
+        #cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
+        # All this stuff is relatively useless
+        """
         for contourChassis in contoursChassis:
             global maxContourChassis, contourSizeChassis, maxContourDataChassis
             contourSizeChassis = cv2.contourArea(cntChassis)
@@ -166,16 +159,13 @@ if __name__ == "__main__":
         finalImage[:,:,0] = np.multiply(Rb,areaMaskBoard)
         finalImage[:,:,1] = np.multiply(Gb,areaMaskBoard)
         finalImage[:,:,2] = np.multiply(Bb,areaMaskBoard)
-        # Contour Stuff End ###
-
-        ### Show Images ###
+        """
         #cv2.imshow('Final',finalImage)
-        cv2.imshow('Chassis Mask', maskChassis)
-        cv2.imshow('Chassis Image', chassisImg)
-        cv2.imshow('Board Image', boardImg)
-        ### Show Images END ###
+        # cv2.imshow('Chassis Mask', maskChassis)
+        # cv2.imshow('Chassis Image', chassisImg)
+        # cv2.imshow('Board Image', boardImg)
 
-
+        # Stuff to make sure image updates still work even after click
         if mousePoint == []:
             cv2.imshow('Original', origPic)
         else:
@@ -189,19 +179,16 @@ if __name__ == "__main__":
             cv2.imshow("Original", origPic)
 
 
-            ### Centroid Calculations ###
         contour_list = []
+        # Much more elegant solution to grab largest blob / most circular blob
         for contourChassis in contoursChassis:
         	approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
         	area = cv2.contourArea(contourChassis)
-
-                # Appends contours in size between 15000 and 17000 pixel area then draws them in greenLower
-                # Need to rework the mask image
-        	if ((len(approx) > 2) & (area > 15000) & (area < 17000)):
-        	       contour_list.append(contourChassis)
+        if ((len(approx) > 2) & (area > 15000) & (area < 17000)): # Appends contours in size between 15000 and 17000 pixel area
+                contour_list.append(contourChassis)
 
         cv2.drawContours(chassisImg, contour_list, -1, (0,255,0), 2)
-        cv2.imshow('objects detected', chassisImg)
+        cv2.imshow('Chassis', chassisImg)
 
         mChassis = cv2.moments(cntChassis)
         mBoard = cv2.moments(cntBoard)
@@ -221,8 +208,10 @@ if __name__ == "__main__":
         secondCxB = cxB + 10
         secondCyB = cyB + 10
         # Draw Centorid
-        cv2.rectangle(origPic, (firstCxC,firstCyC), (secondCxC,secondCyC), (255,0,0), -1) # Draws Centroid Chassis
-        cv2.rectangle(origPic, (firstCxB,firstCyB), (secondCxB,secondCyB), (0,0,255), -1) # Draws Centroid Board
+        # cv2.rectangle(origPic, (firstCxC,firstCyC), (secondCxC,secondCyC), (255,0,0), -1) # Draws Centroid Chassis
+        # cv2.rectangle(origPic, (firstCxB,firstCyB), (secondCxB,secondCyB), (0,0,255), -1) # Draws Centroid Board
+        cv2.circle(origPic, (cxC,cyC), 3, (255,0,0), -1) # Draws Centroid Chassis
+        cv2.circle(origPic, (cxB,cyB), 3, (255,0,0), -1) # Draws Centroid Board
         cv2.imshow('Original', origPic)
         # Note: waitKey() actually pushes the image out to screen
         if cv2.waitKey(1) ==27:
