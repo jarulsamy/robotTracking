@@ -22,4 +22,4 @@ When running, pass the IP of the camera
 
 ## Authors
 
-* **Joshua Arulsamy** - *Initial work* - [PurpleBooth](https://github.com/JoshuaA9088)
+* **Joshua Arulsamy** 
