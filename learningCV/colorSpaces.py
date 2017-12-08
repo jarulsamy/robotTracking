@@ -94,7 +94,7 @@ contour_list = []
 for contour in contours:
 	approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
 	area = cv2.contourArea(contour)
-	if ((len(approx) > 12) & (area > 1000)):
+	if ((len(approx) > 12) & (area > 1000)): # This seems to work regardless of what area is, investigate
 		contour_list.append(contour)
 # Line 68
 cv2.drawContours(altColorSpaceImg, contour_list, -1, (0,0,255), 2)
