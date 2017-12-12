@@ -4,7 +4,6 @@ import sys
 import cv2
 import numpy as np
 import urllib
-import argparse
 ### Variables for click_and_crop ###
 mousePoint = []
 cropping = False
@@ -21,89 +20,97 @@ def click_and_crop(event, x, y, flags, param):
 		mousePoint.append((x, y))
 		cropping = False
 		# draw a rectangle around the region of interest
-		cv2.rectangle(finalImage, mousePoint[0], mousePoint[1], (0, 255, 0), 2)
-		cv2.imshow("Final", finalImage)
+		cv2.rectangle(origPic, mousePoint[0], mousePoint[1], (0, 255, 0), 10)
+		cv2.imshow("Original", origPic)
 	if event == cv2.EVENT_RBUTTONDOWN:
 		print('it works')
 		boardPoint = [(x, y)]
 		cropping = True
 		boardPoint.append((x, y))
 		cropping = False
-		cv2.rectangle(finalImage, boardPoint[0], boardPoint[1], (0, 0, 255), 2)
-		cv2.imshow("Final", finalImage)
+		cv2.rectangle(origPic, boardPoint[0], boardPoint[1], (0, 0, 255), 10)
+		cv2.imshow("Original", origPic)
 
-cv2.namedWindow("Final")
-cv2.setMouseCallback("Final", click_and_crop)
+cv2.namedWindow("Original")
+cv2.setMouseCallback("Original", click_and_crop)
 
 ### Mouse Point Drawing End ###
-### Inital Variable Decleration ###
 kernel = np.ones((5,5), np.uint8)
-# origPic = cv2.imread("multicolors.jpg")
 origPic = cv2.imread("2.jpg")
 maxContour = 0
-### Inital Variable Decleration ###
 
 ### GOOD COLOR SPACES ###
+
 # HSV
 # BGR2RGB NOT GREAT BUT REALLY COOL
 # LUV
 # HLS
-#
-# redLower = (0, 0, 200)
-# redUpper = (30, 100, 255)
-greenUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for board ID
-greenLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for board ID
+# B G R
+redUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for Chassis ID
+redLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for Chassis ID
 
-altColorSpaceImg = cv2.cvtColor(origPic, cv2.COLOR_BGR2YUV)
-blurredImg = cv2.GaussianBlur(altColorSpaceImg, (11, 11), 10) #Blurs image to deal with noise
-blurredImg = cv2.bilateralFilter(blurredImg, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
-mask = cv2.inRange(blurredImg, greenLower, greenUpper)
-mask = cv2.erode(mask, kernel, iterations=2)
-mask = cv2.dilate(mask, kernel, iterations=2)
-### Mask Stuff END ###
+greenUpper = np.array([255, 255, 255], dtype=np.uint8) #Thresholds for Board ID
+greenLower = np.array([0, 0, 0], dtype=np.uint8) #Thresholds for Board ID
 
-### Contour Stuff ###
-im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
-cnt = contours[0]
-# cv2.drawContours(mask, contours, -1, (0,0,255), 2) #Draw countours on ALT Image
-# Finds Largest blob
+### Chassis Masks ###
 
-for contour in contours:
-	contourSize = cv2.contourArea(cnt)
-	if contourSize > maxContour:
-		maxContour = contourSize
-		maxContourData = contour
+altChassis = cv2.cvtColor(origPic, cv2.COLOR_BGR2YUV)
+blurredImgChassis = cv2.GaussianBlur(altChassis, (11, 11), 10) #Blurs image to deal with noise
+blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
+maskChassis = cv2.inRange(blurredImgChassis, redLower, redUpper) # Thesholds the image to grab in range pixels
+maskChassis = cv2.erode(maskChassis, kernel, iterations=2) # Erodes to remove small imperfections
+maskChassis = cv2.dilate(maskChassis, kernel, iterations=2) # Dialates to remove small imperfections
 
-areaMask = np.zeros_like(mask)
+### Board Masks ###
 
-cv2.fillPoly(areaMask,[maxContourData],1) # Draws new areaMask onto new image
+altBoard = cv2.cvtColor(origPic, cv2.COLOR_BGR2LAB)
+blurredImgBoard = cv2.GaussianBlur(altBoard, (11, 11), 10) #Blurs image to deal with noise
+blurredImgBoard = cv2.bilateralFilter(blurredImgBoard, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
+maskBoard = cv2.inRange(blurredImgBoard, greenLower, greenUpper) # Erodes to remove small imperfections
+maskBoard = cv2.erode(maskBoard, kernel, iterations=2) # Erodes to remove small imperfections
+maskBoard = cv2.dilate(maskBoard, kernel, iterations=2) # Dialates to remove small imperfections
 
-R,G,B = cv2.split(blurredImg) #Splits image in to RGB Values
-# Creates solid black image + mask
-finalImage = np.zeros_like(blurredImg)
-finalImage[:,:,0] = np.multiply(R,areaMask)
-finalImage[:,:,1] = np.multiply(G,areaMask)
-finalImage[:,:,2] = np.multiply(B,areaMask)
-# Contour Stuff End ###
+### Chassis Contours ###
 
-# sq = cv2.arcLength(cnt, True)
-# approx = cv2.approxPolyDP(cnt, 0.02 * sq, True)
-# print(approx)
-
-contour_list = []
-for contour in contours:
+contour_list_chassis = []
+im2Chassis, contoursChassis, hierarchyChassis = cv2.findContours(maskChassis, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
+try:
+	cnt = contoursChassis[0]
+except IndexError:
+	print('indexERror')
+for contour in contoursChassis:
 	approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
 	area = cv2.contourArea(contour)
 	if ((len(approx) > 12) & (area > 1000)): # This seems to work regardless of what area is, investigate
-		contour_list.append(contour)
-# Line 68
-cv2.drawContours(altColorSpaceImg, contour_list, -1, (0,0,255), 2)
-cv2.imshow('objects detected', altColorSpaceImg)
-### Show Images ###
-#cv2.imshow('Approximation', approx)
+		contour_list_chassis.append(contour)
+cv2.drawContours(altChassis, contour_list_chassis, -1, (0,0,255), 2)
+
+### Board Contours ###
+
+contour_list_board = []
+im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
+cnt = contoursBoard[0]
+
+for contour in contoursBoard:
+	approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
+	area = cv2.contourArea(contour)
+	if ((len(approx) > 12) & (area > 1000)): # This seems to work regardless of what area is, investigate
+		contour_list_board.append(contour)
+cv2.drawContours(altBoard, contour_list_board, -1, (0,0,255), 2)
+
+### EXPERIMENTAL AREA ###
+# print(cnt[0][0][0])
+for contour in contour_list_chassis:
+	fooX = cnt[i][0][0]
+	fooY = cnt[i][0][1]
+	if
+# Chassis
+cv2.imshow('Alt Chassis', altChassis)
+# cv2.imshow('Mask Chassis',maskChassis)
+# Board
+cv2.imshow('Alt Board', altBoard)
+cv2.imshow('Mask Board', maskBoard)
+# Original
 cv2.imshow('Original', origPic)
-cv2.imshow('Mask',mask)
-#cv2.imshow('Alternative Color Space Image', altColorSpaceImg)
-cv2.imshow('Final',finalImage)
+# Exit K
 cv2.waitKey(0)
-### Show Images END ###
