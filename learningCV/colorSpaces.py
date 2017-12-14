@@ -19,11 +19,9 @@ def click_and_crop(event, x, y, flags, param):
 		cropping = True
 		mousePoint.append((x, y))
 		cropping = False
-		# draw a rectangle around the region of interest
 		cv2.rectangle(origPic, mousePoint[0], mousePoint[1], (0, 255, 0), 10)
 		cv2.imshow("Original", origPic)
 	if event == cv2.EVENT_RBUTTONDOWN:
-		print('it works')
 		boardPoint = [(x, y)]
 		cropping = True
 		boardPoint.append((x, y))
@@ -36,7 +34,8 @@ cv2.setMouseCallback("Original", click_and_crop)
 
 ### Mouse Point Drawing End ###
 kernel = np.ones((5,5), np.uint8)
-origPic = cv2.imread("2.jpg")
+origPic = cv2.imread("img.jpg")
+# origPic = cv2.imread("2.jpg")
 maxContour = 0
 
 ### GOOD COLOR SPACES ###
@@ -46,6 +45,7 @@ maxContour = 0
 # LUV
 # HLS
 # B G R
+# YCrCb Seems to be a little fuzzy for some reason
 redUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for Chassis ID
 redLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for Chassis ID
 
@@ -63,7 +63,8 @@ maskChassis = cv2.dilate(maskChassis, kernel, iterations=2) # Dialates to remove
 
 ### Board Masks ###
 
-altBoard = cv2.cvtColor(origPic, cv2.COLOR_BGR2LAB)
+# altBoard = cv2.cvtColor(origPic, cv2.COLOR_BGR2LAB)
+altBoard = cv2.cvtColor(origPic, cv2.COLOR_BGR2YCR_CB)
 blurredImgBoard = cv2.GaussianBlur(altBoard, (11, 11), 10) #Blurs image to deal with noise
 blurredImgBoard = cv2.bilateralFilter(blurredImgBoard, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
 maskBoard = cv2.inRange(blurredImgBoard, greenLower, greenUpper) # Erodes to remove small imperfections
@@ -98,12 +99,22 @@ for contour in contoursBoard:
 		contour_list_board.append(contour)
 cv2.drawContours(altBoard, contour_list_board, -1, (0,0,255), 2)
 
-### EXPERIMENTAL AREA ###
-# print(cnt[0][0][0])
-for contour in contour_list_chassis:
-	fooX = cnt[i][0][0]
-	fooY = cnt[i][0][1]
-	if
+
+### EXPERIMENTAL ###
+
+img_rgb = cv2.imread('img.jpg')
+img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+template = cv2.imread('template.jpg ',0)
+
+w, h = template.shape[::-1]
+res = cv2.matchTemplate(img_gray,template,cv2.TM_CCOEFF_NORMED)
+threshold = 0.8
+loc = np.where( res >= threshold)
+for pt in zip(*loc[::-1]):
+    cv2.rectangle(altChassis, pt, (pt[0] + w, pt[1] + h), (0,0,255), 1)
+
+### EXPERIMENTAL
+
 # Chassis
 cv2.imshow('Alt Chassis', altChassis)
 # cv2.imshow('Mask Chassis',maskChassis)
