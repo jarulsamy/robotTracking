@@ -46,6 +46,7 @@ maxContour = 0
 # LUV
 # HLS
 # B G R
+# YCrCb Seems to be a little fuzzy for some reason
 redUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for Chassis ID
 redLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for Chassis ID
 
@@ -63,7 +64,8 @@ maskChassis = cv2.dilate(maskChassis, kernel, iterations=2) # Dialates to remove
 
 ### Board Masks ###
 
-altBoard = cv2.cvtColor(origPic, cv2.COLOR_BGR2LAB)
+# altBoard = cv2.cvtColor(origPic, cv2.COLOR_BGR2LAB)
+altBoard = cv2.cvtColor(origPic, cv2.COLOR_BGR2YCR_CB)
 blurredImgBoard = cv2.GaussianBlur(altBoard, (11, 11), 10) #Blurs image to deal with noise
 blurredImgBoard = cv2.bilateralFilter(blurredImgBoard, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
 maskBoard = cv2.inRange(blurredImgBoard, greenLower, greenUpper) # Erodes to remove small imperfections
@@ -98,12 +100,7 @@ for contour in contoursBoard:
 		contour_list_board.append(contour)
 cv2.drawContours(altBoard, contour_list_board, -1, (0,0,255), 2)
 
-### EXPERIMENTAL AREA ###
-# print(cnt[0][0][0])
-for contour in contour_list_chassis:
-	fooX = cnt[i][0][0]
-	fooY = cnt[i][0][1]
-	if
+
 # Chassis
 cv2.imshow('Alt Chassis', altChassis)
 # cv2.imshow('Mask Chassis',maskChassis)
