@@ -1,6 +1,5 @@
 import sys
-sys.path.insert(0, "C:\Python27\myro")
-from myro import *
+
 import cv2
 import numpy as np
 

@@ -19,11 +19,9 @@ def click_and_crop(event, x, y, flags, param):
 		cropping = True
 		mousePoint.append((x, y))
 		cropping = False
-		# draw a rectangle around the region of interest
 		cv2.rectangle(origPic, mousePoint[0], mousePoint[1], (0, 255, 0), 10)
 		cv2.imshow("Original", origPic)
 	if event == cv2.EVENT_RBUTTONDOWN:
-		print('it works')
 		boardPoint = [(x, y)]
 		cropping = True
 		boardPoint.append((x, y))
@@ -36,7 +34,8 @@ cv2.setMouseCallback("Original", click_and_crop)
 
 ### Mouse Point Drawing End ###
 kernel = np.ones((5,5), np.uint8)
-origPic = cv2.imread("2.jpg")
+origPic = cv2.imread("img.jpg")
+# origPic = cv2.imread("2.jpg")
 maxContour = 0
 
 ### GOOD COLOR SPACES ###
@@ -100,6 +99,21 @@ for contour in contoursBoard:
 		contour_list_board.append(contour)
 cv2.drawContours(altBoard, contour_list_board, -1, (0,0,255), 2)
 
+
+### EXPERIMENTAL ###
+
+img_rgb = cv2.imread('img.jpg')
+img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+template = cv2.imread('template.jpg ',0)
+
+w, h = template.shape[::-1]
+res = cv2.matchTemplate(img_gray,template,cv2.TM_CCOEFF_NORMED)
+threshold = 0.8
+loc = np.where( res >= threshold)
+for pt in zip(*loc[::-1]):
+    cv2.rectangle(altChassis, pt, (pt[0] + w, pt[1] + h), (0,0,255), 1)
+
+### EXPERIMENTAL
 
 # Chassis
 cv2.imshow('Alt Chassis', altChassis)
