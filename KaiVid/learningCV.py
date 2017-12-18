@@ -86,7 +86,7 @@ if __name__ == "__main__":
         readColors = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR) # Each new frame
         origPic = readColors # Keeps an original unedited
 
-        chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2YUV) #Converts to LUV for chassis detection
+        chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detection
         boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to XYZ for board detection, Sees colored light somehow ???
 
         blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
@@ -153,8 +153,9 @@ if __name__ == "__main__":
         for contourChassis in contoursChassis:
         	approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
         	area = cv2.contourArea(contourChassis)
-            if ((len(approx) > 10) & (area > 30)):
-                contour_list.append(contourChassis)
+            if ((len(approx) > 0) & (area > 0)):
+                    contour_list.append(contourChassis)
+                print('foo')
 
         cv2.drawContours(chassisImg, contour_list, -1, (0,255,0), 2)
         cv2.imshow('Chassis Image', chassisImg)
