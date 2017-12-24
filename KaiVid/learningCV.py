@@ -77,8 +77,8 @@ if __name__ == "__main__":
 		redUpper = np.array([110, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
 		redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
 
-		greenUpper = np.array([200, 200, 255], dtype=np.uint8) #Thresholds for board ID
-		greenLower = np.array([0, 0, 150], dtype=np.uint8) #Thresholds for board ID
+		greenUpper = np.array([100, 125, 255], dtype=np.uint8) #Thresholds for board ID
+		greenLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for board ID
 
 		kernel = np.ones((5,5), np.uint8)
 
@@ -125,7 +125,6 @@ if __name__ == "__main__":
 			cv2.rectangle(origPic, boardPoint[0], boardPoint[1], (0, 255, 0), 10)
 			cv2.imshow("Original", origPic)
 
-
 		contour_list_chassis = []
 		contour_list_board = []
 		# Much more elegant solution to grab largest blob / most circular blob
@@ -138,26 +137,32 @@ if __name__ == "__main__":
 		for contourBoard in contoursBoard:
 			approx = cv2.approxPolyDP(contourBoard, 0.01*cv2.arcLength(contourBoard, True), True)
 			area = cv2.contourArea(contourBoard)
-			if ((len(approx) > 8) & (area > 300)):
+			if ((len(approx) > 8) & (area > 0)):
 				contour_list_board.append(contourBoard)
 
-		cv2.drawContours(chassisImg, contour_list, -1, (0,255,0), 2)
-		cv2.imshow('Chassis Image', chassisImg)
-		# cv2.imshow('edge', edgeChassis)
-		for countours in contour_list:
-			mChassis = cv2.moments(contour_list[0])
-			mBoard = cv2.moments(cntBoard)
+		cv2.drawContours(chassisImg, contour_list_chassis, -1, (0,255,0), 2)
+		cv2.drawContours(boardImg, contour_list_board, -1, (0,255,0), 2)
+
+		for countours in contour_list_chassis:
+			mChassis = cv2.moments(contour_list_chassis[0])
 			cxC = int(mChassis['m10']/mChassis['m00'])
 			cyC = int(mChassis['m01']/mChassis['m00'])
 
-		cxB = int(mBoard['m10']/mBoard['m00'])
-		cyB = int(mBoard['m01']/mBoard['m00'])
-		# Centroid Range Chassis Can be done more elegangantly
+		for contours in contour_list_board:
+			mBoard = cv2.moments(contour_list_board[0])
+			cxB = int(mBoard['m10']/mBoard['m00'])
+			cyB = int(mBoard['m01']/mBoard['m00'])
 
 		# Draw Centorid
-		cv2.circle(origPic, (cxC,cyC), 20, (255,0,0), -20) # Draws Centroid Chassis
-		cv2.circle(origPic, (cxB,cyB), 20, (255,0,0), -20) # Draws Centroid Board
+		if IndexError:
+			print('skip')
+		else:
+			cv2.circle(origPic, (cxC,cyC), 20, (255,0,0), -20) # Draws Centroid Chassis
+			cv2.circle(origPic, (cxB,cyB), 20, (255,0,0), -20) # Draws Centroid Board
+
 		cv2.imshow('Original', origPic)
+		cv2.imshow('Chassis Image', chassisImg)
+		cv2.imshow('Board Image', boardImg)
 
 		if cv2.waitKey(1) == 27:
 			exit(0)
