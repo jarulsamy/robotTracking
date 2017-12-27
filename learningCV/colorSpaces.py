@@ -32,6 +32,7 @@ def click_and_crop(event, x, y, flags, param):
 cv2.namedWindow("Original")
 cv2.setMouseCallback("Original", click_and_crop)
 
+#FOO
 ### Mouse Point Drawing End ###
 kernel = np.ones((5,5), np.uint8)
 origPic = cv2.imread("img.jpg")
