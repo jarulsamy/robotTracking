@@ -9,25 +9,25 @@ mousePoint = []
 cropping = False
 ### Variables for click_and_crop ###
 
-	# Mouse point Drawing
+    # Mouse point Drawing
 
 def click_and_crop(event, x, y, flags, param):
-	# grab references to the global variables
-	global mousePoint, cropping
-	if event == cv2.EVENT_LBUTTONDOWN:
-		mousePoint = [(x, y)]
-		cropping = True
-		mousePoint.append((x, y))
-		cropping = False
-		cv2.rectangle(origPic, mousePoint[0], mousePoint[1], (0, 255, 0), 10)
-		cv2.imshow("Original", origPic)
-	if event == cv2.EVENT_RBUTTONDOWN:
-		boardPoint = [(x, y)]
-		cropping = True
-		boardPoint.append((x, y))
-		cropping = False
-		cv2.rectangle(origPic, boardPoint[0], boardPoint[1], (0, 0, 255), 10)
-		cv2.imshow("Original", origPic)
+    # grab references to the global variables
+    global mousePoint, cropping
+    if event == cv2.EVENT_LBUTTONDOWN:
+        mousePoint = [(x, y)]
+        cropping = True
+        mousePoint.append((x, y))
+        cropping = False
+        cv2.rectangle(origPic, mousePoint[0], mousePoint[1], (0, 255, 0), 10)
+        cv2.imshow("Original", origPic)
+    if event == cv2.EVENT_RBUTTONDOWN:
+        boardPoint = [(x, y)]
+        cropping = True
+        boardPoint.append((x, y))
+        cropping = False
+        cv2.rectangle(origPic, boardPoint[0], boardPoint[1], (0, 0, 255), 10)
+        cv2.imshow("Original", origPic)
 
 cv2.namedWindow("Original")
 cv2.setMouseCallback("Original", click_and_crop)
@@ -76,14 +76,14 @@ maskBoard = cv2.dilate(maskBoard, kernel, iterations=2) # Dialates to remove sma
 contour_list_chassis = []
 im2Chassis, contoursChassis, hierarchyChassis = cv2.findContours(maskChassis, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
 try:
-	cnt = contoursChassis[0]
+    cnt = contoursChassis[0]
 except IndexError:
-	print('indexERror')
+    print('indexERror')
 for contour in contoursChassis:
-	approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
-	area = cv2.contourArea(contour)
-	if ((len(approx) > 12) & (area > 1000)): # This seems to work regardless of what area is, investigate
-		contour_list_chassis.append(contour)
+    approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
+    area = cv2.contourArea(contour)
+    if ((len(approx) > 12) & (area > 1000)): # This seems to work regardless of what area is, investigate
+        contour_list_chassis.append(contour)
 cv2.drawContours(altChassis, contour_list_chassis, -1, (0,0,255), 2)
 
 ### Board Contours ###
@@ -93,10 +93,10 @@ im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_T
 cnt = contoursBoard[0]
 
 for contour in contoursBoard:
-	approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
-	area = cv2.contourArea(contour)
-	if ((len(approx) > 12) & (area > 1000)): # This seems to work regardless of what area is, investigate
-		contour_list_board.append(contour)
+    approx = cv2.approxPolyDP(contour, 0.01*cv2.arcLength(contour, True), True)
+    area = cv2.contourArea(contour)
+    if ((len(approx) > 12) & (area > 1000)): # This seems to work regardless of what area is, investigate
+        contour_list_board.append(contour)
 cv2.drawContours(altBoard, contour_list_board, -1, (0,0,255), 2)
 
 
