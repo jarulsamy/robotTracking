@@ -2,7 +2,7 @@
 
 import sys
 
-class robotTracking(object):
+class calc(object):
 # Variables defined here can be used when the class is called with that given name.
 # In this case math = robotTracking() so for example, print(math.newThing)
     newThing = 0
@@ -35,21 +35,21 @@ else:
 
 
 if operation == 'add':
-    math = robotTracking()
+    math = calc()
     foo = math.add2Things(num1, num2)
     print foo
 elif operation == 'subtract':
-    math = robotTracking()
+    math = calc()
     foo = math.sub2Things(num1, num2)
     print foo
 elif operation == 'multiply':
-    math = robotTracking()
+    math = calc()
     foo = math.x2Things(num1, num2)
     print foo
 elif operation == 'divide':
-    math = robotTracking()
+    math = calc()
     foo = math.divide2Things(num1, num2)
     print foo
 else:
-    math = robotTracking()
+    math = calc()
     print("Unsupported Operation")
