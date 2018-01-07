@@ -1,11 +1,21 @@
 from base.KaicongInput import KaicongInput
-import cv2
+import socket
+import sys
 import numpy as np
+import cv2
+import time
 
 # Color space info:
 # Good: YUV LUV YCR_CV
 # Okay: HSV HLS LAB Most of these have issues with noise
 # Bad: RGB BGR
+
+
+HOST = '127.0.0.1'
+PORT = 10000
+s = socket.socket()
+s.connect((HOST, PORT))
+
 
 ### Variables for click_and_crop ###
 mousePoint = []
