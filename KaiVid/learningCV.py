@@ -1,6 +1,7 @@
 from base.KaicongInput import KaicongInput
 import cv2
 import numpy as np
+import time
 
 # Color space info:
 # Good: YUV LUV YCR_CV
@@ -162,7 +163,9 @@ if __name__ == "__main__":
             x = click[0]
             y = click[1]
             s.connect((HOST, PORT))
+            time.sleep(1)
             s.send("turnLeft(1,1)")
+            time.sleep(1)
             s.close()
 
         def click_and_crop(event, x, y, flags, param):
