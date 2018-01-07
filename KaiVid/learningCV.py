@@ -6,6 +6,13 @@ import numpy as np
 # Good: YUV LUV YCR_CV
 # Okay: HSV HLS LAB Most of these have issues with noise
 # Bad: RGB BGR
+import socket
+import sys
+
+
+HOST = '127.0.0.1'
+PORT = 2000
+s = socket.socket()
 
 ### Variables for click_and_crop ###
 mousePoint = []
@@ -23,22 +30,8 @@ class KaicongVideo(KaicongInput):
     maxContourDataBoard = 0
     ### Initial Variable Decleration ###
 
-    ### Mouse point Drawing ###
-    def click_and_crop(event, x, y, flags, param):
-        global mousePoint, cropping, boardPoints
-        if event == cv2.EVENT_LBUTTONDOWN:
-            mousePoint = [(x, y)]
-            cropping = True
-            mousePoint.append((x, y))
-            cropping = False
-
-
-    cv2.namedWindow("Original")
-    cv2.setMouseCallback("Original", click_and_crop)
-    ### Mouse Point Drawing End ###
-
     # PACKET_SIZE = 1024
-    PACKET_SIZE = 2048
+    PACKET_SIZE = 1024
     URI = "http://%s:81/livestream.cgi?user=%s&pwd=%s&streamid=3&audio=1&filename="
 
     def __init__(self, domain, callback, user="admin", pwd="123456"):
@@ -74,10 +67,13 @@ if __name__ == "__main__":
 
     def show_video(jpg):
         ### Defining Inital Necessary Variables ###
-        redUpper = np.array([110, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
+        redUpper = np.array([100, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
         redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
 
-        greenUpper = np.array([100, 125, 255], dtype=np.uint8) #Thresholds for board ID
+        # greenUpper = np.array([100, 125, 255], dtype=np.uint8) #Thresholds for board ID
+        # greenLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for board ID
+
+        greenUpper = np.array([100, 100, 255], dtype=np.uint8) #Thresholds for board ID
         greenLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for board ID
 
         kernel = np.ones((5,5), np.uint8)
@@ -91,10 +87,10 @@ if __name__ == "__main__":
         boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to XYZ for board detection, Sees colored light somehow ???
 
         blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
-        blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
+        # blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
 
         blurredImgBoard = cv2.GaussianBlur(boardImg, (11, 11), 10) #Blurs image to deal with noise
-        blurredImgBoard = cv2.bilateralFilter(blurredImgBoard, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
+        # blurredImgBoard = cv2.bilateralFilter(blurredImgBoard, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
 
         maskChassis = cv2.inRange(blurredImgChassis, redLower, redUpper) # Creates blob image based on threshold; redLower and redUpper
         maskChassis = cv2.erode(maskChassis, kernel, iterations=2) # Erodes to get rid of random specks
@@ -131,40 +127,58 @@ if __name__ == "__main__":
         for contourChassis in contoursChassis:
             approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
             area = cv2.contourArea(contourChassis)
-            if ((len(approx) > 8) & (area > 300)):
+            if ((len(approx) > 0) & (area > 3000)):
                 contour_list_chassis.append(contourChassis)
 
         for contourBoard in contoursBoard:
             approx = cv2.approxPolyDP(contourBoard, 0.01*cv2.arcLength(contourBoard, True), True)
             area = cv2.contourArea(contourBoard)
-            if ((len(approx) > 8) & (area > 0)):
+            if ((len(approx) > 0) & (area > 100)):
                 contour_list_board.append(contourBoard)
 
         cv2.drawContours(chassisImg, contour_list_chassis, -1, (0,255,0), 2)
         cv2.drawContours(boardImg, contour_list_board, -1, (0,255,0), 2)
 
-        for countours in contour_list_chassis:
-            mChassis = cv2.moments(contour_list_chassis[0])
+        for contours in contour_list_chassis:
+            global cxC, cyC
+            mChassis = cv2.moments(contours)
             cxC = int(mChassis['m10']/mChassis['m00'])
             cyC = int(mChassis['m01']/mChassis['m00'])
+            cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
 
         for contours in contour_list_board:
-            mBoard = cv2.moments(contour_list_board[0])
+            mBoard = cv2.moments(contours)
+            global cxB, cyB
             cxB = int(mBoard['m10']/mBoard['m00'])
             cyB = int(mBoard['m01']/mBoard['m00'])
-
+            cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
         # Draw Centorid
-        if IndexError:
-            print('skip')
-        else:
-            cv2.circle(origPic, (cxC,cyC), 20, (255,0,0), -20) # Draws Centroid Chassis
-            cv2.circle(origPic, (cxB,cyB), 20, (255,0,0), -20) # Draws Centroid Board
-
         cv2.imshow('Original', origPic)
         cv2.imshow('Chassis Image', chassisImg)
         cv2.imshow('Board Image', boardImg)
 
+        def goToPoint(click):
+            click = click[0]
+            x = click[0]
+            y = click[1]
+            s.connect((HOST, PORT))
+            s.send("turnLeft(1,1)")
+            s.close()
+
+        def click_and_crop(event, x, y, flags, param):
+            global mousePoint, cropping, boardPoints
+            if event == cv2.EVENT_LBUTTONDOWN:
+                mousePoint = [(x, y)]
+                cropping = True
+                mousePoint.append((x, y))
+                cropping = False
+                goToPoint(mousePoint)
+
+        cv2.namedWindow("Original")
+        cv2.setMouseCallback("Original", click_and_crop)
+
         if cv2.waitKey(1) == 27:
+            s.close()
             exit(0)
 
     video = KaicongVideo(sys.argv[1], show_video)
