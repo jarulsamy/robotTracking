@@ -14,8 +14,8 @@ HOST = '127.0.0.1'
 
 serversocket.bind((HOST, PORT))
 serversocket.listen(10)
-
-MAX_LENGTH = 1024
+# 4096
+MAX_LENGTH = 512
 
 def handle(clientsocket):
   while 1:
