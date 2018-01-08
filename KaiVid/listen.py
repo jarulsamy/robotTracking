@@ -4,18 +4,18 @@ from threading import Thread
 from myro import *
 init("COM6")
 setLED("Left", "on")
-setLED("Right", "off")
+setLED("Front", "on")
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # PORT = 10000
-PORT = 2000
+PORT = 10000
 HOST = '127.0.0.1'
 
 serversocket.bind((HOST, PORT))
 serversocket.listen(10)
 # 4096
-MAX_LENGTH = 512
+MAX_LENGTH = 1024
 
 def handle(clientsocket):
   while 1:
