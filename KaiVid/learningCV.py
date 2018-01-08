@@ -1,19 +1,21 @@
 from base.KaicongInput import KaicongInput
-import cv2
+import socket
+import sys
 import numpy as np
+import cv2
 import time
 
 # Color space info:
 # Good: YUV LUV YCR_CV
 # Okay: HSV HLS LAB Most of these have issues with noise
 # Bad: RGB BGR
-import socket
-import sys
 
 
 HOST = '127.0.0.1'
-PORT = 2000
+PORT = 10000
 s = socket.socket()
+s.connect((HOST, PORT))
+
 
 ### Variables for click_and_crop ###
 mousePoint = []
@@ -32,7 +34,7 @@ class KaicongVideo(KaicongInput):
     ### Initial Variable Decleration ###
 
     # PACKET_SIZE = 1024
-    PACKET_SIZE = 1024
+    PACKET_SIZE = 2048
     URI = "http://%s:81/livestream.cgi?user=%s&pwd=%s&streamid=3&audio=1&filename="
 
     def __init__(self, domain, callback, user="admin", pwd="123456"):
@@ -75,7 +77,7 @@ if __name__ == "__main__":
         # greenLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for board ID
 
         greenUpper = np.array([100, 100, 255], dtype=np.uint8) #Thresholds for board ID
-        greenLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for board ID
+        greenLower = np.array([50, 50, 50], dtype=np.uint8) #Thresholds for board ID
 
         kernel = np.ones((5,5), np.uint8)
 
@@ -128,57 +130,65 @@ if __name__ == "__main__":
         for contourChassis in contoursChassis:
             approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
             area = cv2.contourArea(contourChassis)
-            if ((len(approx) > 0) & (area > 3000)):
+            if ((len(approx) > 0) & (area > 2500)):
                 contour_list_chassis.append(contourChassis)
 
         for contourBoard in contoursBoard:
             approx = cv2.approxPolyDP(contourBoard, 0.01*cv2.arcLength(contourBoard, True), True)
             area = cv2.contourArea(contourBoard)
-            if ((len(approx) > 0) & (area > 100)):
+            if ((len(approx) > 0) & (area > 300) & (area < 500)):
                 contour_list_board.append(contourBoard)
 
         cv2.drawContours(chassisImg, contour_list_chassis, -1, (0,255,0), 2)
         cv2.drawContours(boardImg, contour_list_board, -1, (0,255,0), 2)
 
+        # if (len(contour_list_chassis) > 1): # Memory management so list doesn't get so big and crash
+        #     contour_list_chassis = contour_list_chassis[0]
+        # if (len(contour_list_board) > 1): # Memory management so list doesn't get so big and crash
+        #     contour_list_board = contour_list_board[0]
+
         for contours in contour_list_chassis:
             global cxC, cyC
-            mChassis = cv2.moments(contours)
-            cxC = int(mChassis['m10']/mChassis['m00'])
-            cyC = int(mChassis['m01']/mChassis['m00'])
-            cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
+            if IndexError:
+                print("foo")
+                pass
+            else:
+                mChassis = cv2.moments(contours)
+                cxC = int(mChassis['m10']/mChassis['m00'])
+                cyC = int(mChassis['m01']/mChassis['m00'])
+                cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
 
         for contours in contour_list_board:
             mBoard = cv2.moments(contours)
             global cxB, cyB
-            cxB = int(mBoard['m10']/mBoard['m00'])
-            cyB = int(mBoard['m01']/mBoard['m00'])
-            cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
+            if IndexError:
+                pass
+            else:
+                cxB = int(mBoard['m10']/mBoard['m00'])
+                cyB = int(mBoard['m01']/mBoard['m00'])
+                cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
         # Draw Centorid
         cv2.imshow('Original', origPic)
         cv2.imshow('Chassis Image', chassisImg)
         cv2.imshow('Board Image', boardImg)
+        # #
+        # def goToPoint(click):
+        #     click = click[0]
+        #     x = click[0]
+        #     y = click[1]
+        #     s.send("turnLeft(1,1)")
+        #
+        # def click_and_crop(event, x, y, flags, param):
+        #     global mousePoint, cropping, boardPoints
+        #     if event == cv2.EVENT_LBUTTONDOWN:
+        #         mousePoint = [(x, y)]
+        #         cropping = True
+        #         mousePoint.append((x, y))
+        #         cropping = False
+        #         goToPoint(mousePoint)
 
-        def goToPoint(click):
-            click = click[0]
-            x = click[0]
-            y = click[1]
-            s.connect((HOST, PORT))
-            time.sleep(1)
-            s.send("turnLeft(1,1)")
-            time.sleep(1)
-            s.close()
-
-        def click_and_crop(event, x, y, flags, param):
-            global mousePoint, cropping, boardPoints
-            if event == cv2.EVENT_LBUTTONDOWN:
-                mousePoint = [(x, y)]
-                cropping = True
-                mousePoint.append((x, y))
-                cropping = False
-                goToPoint(mousePoint)
-
-        cv2.namedWindow("Original")
-        cv2.setMouseCallback("Original", click_and_crop)
+        # cv2.namedWindow("Original")
+        # cv2.setMouseCallback("Original", click_and_crop)
 
         if cv2.waitKey(1) == 27:
             s.close()
