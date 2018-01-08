@@ -76,8 +76,8 @@ if __name__ == "__main__":
         # greenUpper = np.array([100, 125, 255], dtype=np.uint8) #Thresholds for board ID
         # greenLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for board ID
 
-        greenUpper = np.array([100, 100, 255], dtype=np.uint8) #Thresholds for board ID
-        greenLower = np.array([50, 50, 50], dtype=np.uint8) #Thresholds for board ID
+        greenUpper = np.array([255, 50, 100], dtype=np.uint8) #Thresholds for board ID
+        greenLower = np.array([50, 0, 0], dtype=np.uint8) #Thresholds for board ID
 
         kernel = np.ones((5,5), np.uint8)
 
@@ -87,7 +87,8 @@ if __name__ == "__main__":
         origPic = readColors # Keeps an original unedited
 
         chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detection
-        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to XYZ for board detection, Sees colored light somehow ???
+        # boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to XYZ for board detection, Sees colored light somehow ???
+        boardImg = readColors
 
         blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
         # blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
@@ -130,13 +131,13 @@ if __name__ == "__main__":
         for contourChassis in contoursChassis:
             approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
             area = cv2.contourArea(contourChassis)
-            if ((len(approx) > 0) & (area > 2500)):
+            if ((len(approx) > 8) & (area > 1000)):
                 contour_list_chassis.append(contourChassis)
 
         for contourBoard in contoursBoard:
             approx = cv2.approxPolyDP(contourBoard, 0.01*cv2.arcLength(contourBoard, True), True)
             area = cv2.contourArea(contourBoard)
-            if ((len(approx) > 0) & (area > 300) & (area < 500)):
+            if ((len(approx) > 0) & (area > 10)):
                 contour_list_board.append(contourBoard)
 
         cv2.drawContours(chassisImg, contour_list_chassis, -1, (0,255,0), 2)
@@ -149,46 +150,40 @@ if __name__ == "__main__":
 
         for contours in contour_list_chassis:
             global cxC, cyC
-            if IndexError:
-                print("foo")
-                pass
-            else:
-                mChassis = cv2.moments(contours)
-                cxC = int(mChassis['m10']/mChassis['m00'])
-                cyC = int(mChassis['m01']/mChassis['m00'])
-                cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
+            mChassis = cv2.moments(contours)
+            cxC = int(mChassis['m10']/mChassis['m00'])
+            cyC = int(mChassis['m01']/mChassis['m00'])
+            cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
 
         for contours in contour_list_board:
             mBoard = cv2.moments(contours)
             global cxB, cyB
-            if IndexError:
-                pass
-            else:
-                cxB = int(mBoard['m10']/mBoard['m00'])
-                cyB = int(mBoard['m01']/mBoard['m00'])
-                cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
+            cxB = int(mBoard['m10']/mBoard['m00'])
+            cyB = int(mBoard['m01']/mBoard['m00'])
+            cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
+
         # Draw Centorid
         cv2.imshow('Original', origPic)
         cv2.imshow('Chassis Image', chassisImg)
         cv2.imshow('Board Image', boardImg)
-        # #
-        # def goToPoint(click):
-        #     click = click[0]
-        #     x = click[0]
-        #     y = click[1]
-        #     s.send("turnLeft(1,1)")
         #
-        # def click_and_crop(event, x, y, flags, param):
-        #     global mousePoint, cropping, boardPoints
-        #     if event == cv2.EVENT_LBUTTONDOWN:
-        #         mousePoint = [(x, y)]
-        #         cropping = True
-        #         mousePoint.append((x, y))
-        #         cropping = False
-        #         goToPoint(mousePoint)
+        def goToPoint(click):
+            click = click[0]
+            x = click[0]
+            y = click[1]
+            s.send("turnLeft(1,1)")
 
-        # cv2.namedWindow("Original")
-        # cv2.setMouseCallback("Original", click_and_crop)
+        def click_and_crop(event, x, y, flags, param):
+            global mousePoint, cropping, boardPoints
+            if event == cv2.EVENT_LBUTTONUP:
+                mousePoint = [(x, y)]
+                cropping = True
+                mousePoint.append((x, y))
+                cropping = False
+                goToPoint(mousePoint)
+
+        cv2.namedWindow("Original")
+        cv2.setMouseCallback("Original", click_and_crop)
 
         if cv2.waitKey(1) == 27:
             s.close()
