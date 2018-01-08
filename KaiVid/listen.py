@@ -3,8 +3,10 @@ import socket
 from threading import Thread
 from myro import *
 init("COM6")
-setLED("Left", "on")
-setLED("Front", "on")
+setLED("Left", "off")
+setLED("Right", "off")
+setLED("Front", "off")
+setLED("Back", "off")
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
