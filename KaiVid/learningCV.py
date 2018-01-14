@@ -14,7 +14,7 @@ import time
 HOST = '127.0.0.1'
 PORT = 10000
 s = socket.socket()
-s.connect((HOST, PORT))
+# s.connect((HOST, PORT))
 
 
 ### Variables for click_and_crop ###
