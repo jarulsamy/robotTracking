@@ -14,7 +14,7 @@ import time
 HOST = '127.0.0.1'
 PORT = 10000
 s = socket.socket()
-s.connect((HOST, PORT))
+# s.connect((HOST, PORT))
 
 
 ### Variables for click_and_crop ###
@@ -69,37 +69,30 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     def show_video(jpg):
-        ### Defining Inital Necessary Variables ###
+        ### Defining Thresholds ###
         redUpper = np.array([100, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
         redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
-
-        # greenUpper = np.array([100, 125, 255], dtype=np.uint8) #Thresholds for board ID
-        # greenLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for board ID
 
         greenUpper = np.array([255, 50, 100], dtype=np.uint8) #Thresholds for board ID
         greenLower = np.array([50, 0, 0], dtype=np.uint8) #Thresholds for board ID
 
         kernel = np.ones((5,5), np.uint8)
 
-        #YUV and LUV Work really well here, currenty sets everything robot to white
-        #Else set to black
+        # YUV and LUV Work really well here, currenty sets everything robot to white
+        # Else set to black
         readColors = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR) # Each new frame
-        origPic = readColors # Keeps an original unedited
 
+        origPic = readColors # Keeps an original unedited
         chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detection
-        # boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2XYZ) # Converts to XYZ for board detection, Sees colored light somehow ???
-        boardImg = readColors
+        boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2RGB) #Converts to LUV for chassis detection # This weird double line thing
+        boardImg = cv2.cvtColor(boardImg, cv2.COLOR_RGB2BGR) #Converts to LUV for chassis detection # is to fix a bug
 
         blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
-        # blurredImgChassis = cv2.bilateralFilter(blurredImgChassis, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
-
-        blurredImgBoard = cv2.GaussianBlur(boardImg, (11, 11), 10) #Blurs image to deal with noise
-        # blurredImgBoard = cv2.bilateralFilter(blurredImgBoard, 25, 75, 75) #Uses bilaterial filtering to deal with more noise
-
         maskChassis = cv2.inRange(blurredImgChassis, redLower, redUpper) # Creates blob image based on threshold; redLower and redUpper
         maskChassis = cv2.erode(maskChassis, kernel, iterations=2) # Erodes to get rid of random specks
         maskChassis = cv2.dilate(maskChassis, kernel, iterations=2) # Dialates to get rid of random specks
 
+        blurredImgBoard = cv2.GaussianBlur(boardImg, (11, 11), 10) #Blurs image to deal with noise
         maskBoard = cv2.inRange(blurredImgBoard, greenLower, greenUpper) # Creates blob image based on threshold; greenLower and greenUpper
         maskBoard = cv2.erode(maskBoard, kernel, iterations=2) # Erodes to get rid of random specks
         maskBoard = cv2.dilate(maskBoard, kernel, iterations=2) # Dialates to get rid of random specks
