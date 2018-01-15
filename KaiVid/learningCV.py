@@ -158,7 +158,9 @@ if __name__ == "__main__":
         # Draw Centorid
         cv2.imshow('Original', origPic)
         cv2.imshow('Chassis Image', chassisImg)
+        cv2.imshow('Blurred Chassis Image', blurredImgChassis)
         cv2.imshow('Board Image', boardImg)
+        cv2.imshow('Blurred Board Image', blurredImgBoard)
         #
         def goToPoint(click):
             click = click[0]
