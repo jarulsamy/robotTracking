@@ -11,9 +11,10 @@ Clone Repo
 - Python 2.7 (Used for image processing)
   - OpenCV v3.2
   - Numpy Latest
-  - PySerial
+  - PySerial Latest through PIP
+  - Pillow Latest
 - Python 2.4 (Used for connecting to robot)
-  - PySerial
+  - PySerial Latest for Python 2.4
   - Myro v2.99 or v2.95
 
 ## Running With Robot
@@ -60,7 +61,6 @@ Call KaiVid/findRobot.py in CMD passing it the IP of the camera
 ```
 python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 ```
-
 
 
 ## Authors
