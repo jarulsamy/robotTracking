@@ -4,22 +4,29 @@ Using OpenCV2 and Numpy to track a robot. Specifically been used and tested with
 
 ## Getting Started
 
-Download Repo and Extract.
+Clone Repo
 
-### Prerequisites
+## Prerequisites
+- Python 2.7 (Used for image processing)
+  - OpenCV v3.2
+  - Numpy Latest
+  - Pyserial
+- Python 2.4 (Used for connecting to robot)
+  - Pyserial
+  - Myro v2.99 or v2.95
 
-OpenCv2 and Numpy
+## Running
 
+Call KaiVid/findRobot.py in cmd with
 ```
-import cv2
-import numpy as np
+python /WHERE YOU DOWNLOADED IT/KaiVid/findRobot.py
 ```
-
-## Running the tests
-
-Currently the most up to date script is: KaiVid/learningCV.py
-When running, pass the IP of the camera
+Ensure **Python 2.7** is set in the environment variables of windows
 
 ## Authors
 
-* **Joshua Arulsamy** 
+* **Joshua Arulsamy**
+
+## Acknowledgments
+
+* **Roby Velez**
