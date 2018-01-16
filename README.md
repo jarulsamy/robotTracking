@@ -7,15 +7,20 @@ Using OpenCV2 and Numpy to track a robot. Specifically been used and tested with
 Clone Repo
 
 ## Prerequisites
-- Ensure **Python 2.7** is set in the environment variables of windows
 - Python 2.7 (Used for image processing)
-  - OpenCV v3.2
+  - Ensure **Python 2.7** is set in the environment variables of Windows **NOT** Python 2.4
+  - OpenCV v3.2 or v2.4
   - Numpy Latest
   - PySerial Latest through PIP
   - Pillow Latest
 - Python 2.4 (Used for connecting to robot)
   - PySerial Latest for Python 2.4
-  - Myro v2.99 or v2.95
+  - Image TK Latest for Python 2.4
+  - Myro v2.99 or v2.95 (Pain to Install, Will have Image TK error, Ignore)
+
+## How we Connect to the robot
+Due to the age of the Myro, it is only compatible with Python 2.4. Anything newer moved to Calico which at the moment does not support OpenCV. Listen.py connects to the robot in a Python 2.4 instance, then creates a listening server on port 10000.
+The findRobot.py script, sends instructions to this server and moves the robot. Running without the robot is detailed down below.
 
 ## Running With Robot
 Before running the image processing script (findRobot.py) the pipeline server for Python 2.4 (listen.py) must be started.
@@ -28,7 +33,7 @@ C:\Python24\python C:\WHERE YOU SAVED IT\KaiVid\listen.py
 TO
 
 ```
-C:\WHEREVER PYTHON 2.4 IS INSTALLED C:\WHERE YOU SAVED IT\KaiVid\listen.py
+C:\WHEREVER PYTHON 2.4 IS INSTALLED\python C:\WHERE YOU SAVED IT\KaiVid\listen.py
 ```
 
 Listen.py will connect to your scribbler robot. Edit listen.py and change whatever COM port listed to your Robot's Port.
@@ -40,6 +45,7 @@ Call KaiVid/findRobot.py in CMD passing it the IP of the camera
 ```
 python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 ```
+This should be done with **Python 2.7** if not in your environment variable
 
 ## Running without Robot
 None of the Python 2.4 environment is needed without the robot.
@@ -63,7 +69,6 @@ python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 ```
 This should open 3 Windows showing the alternate chassis, board, and original images.
 
-
 **Robot Picked**
 <img src="https://user-images.githubusercontent.com/14321139/34995801-d096836a-fa94-11e7-9c0d-7db769829056.PNG" alt="Robot Picked" width="320" height="240">
 
@@ -73,11 +78,6 @@ This should open 3 Windows showing the alternate chassis, board, and original im
 **Centroids**
 <img src="https://user-images.githubusercontent.com/14321139/34995799-d02e19f6-fa94-11e7-850f-02060456b2b1.PNG" alt="Centroids" width="320" height="240">
 
-
-<!--
-![robot picked](https://user-images.githubusercontent.com/14321139/34995801-d096836a-fa94-11e7-9c0d-7db769829056.PNG =320x240)
-<!-- ![chassis blurred](https://user-images.githubusercontent.com/14321139/34995800-d06380f0-fa94-11e7-9eef-acd5436585af.PNG) -->
-<!-- ![board blurred](https://user-images.githubusercontent.com/14321139/34995802-d0cab61c-fa94-11e7-8883-2fd7bc34fc82.PNG) -->
 ## Changing Thresholds
 To change the threshold to identify different colors edit the findRobot.py script
 
