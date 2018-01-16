@@ -42,7 +42,7 @@ python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 ```
 
 ## Running without Robot
-
+None of the Python 2.4 environment is needed without the robot.
 Edit /KaiVid/findRobot.py
 Comment out the following line:
 
@@ -61,7 +61,25 @@ Call KaiVid/findRobot.py in CMD passing it the IP of the camera
 ```
 python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 ```
-This should open 3 Windows demonstrating the alternate chassis, board, and original images. 
+This should open 3 Windows demonstrating the alternate chassis, board, and original images.
+
+## Changing Thresholds
+To change the threshold to identify different colors edit the findRobot.py script
+
+Scroll down to:
+
+```
+redUpper = np.array([100, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
+redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
+
+greenUpper = np.array([255, 50, 100], dtype=np.uint8) #Thresholds for board ID
+greenLower = np.array([50, 0, 0], dtype=np.uint8) #Thresholds for board ID
+```
+
+Red thresholds are for the chassis of the robot, green for the blue strip.
+
+Remember these values are in **BGR** NOT **RGB**
+
 
 ## Authors
 
