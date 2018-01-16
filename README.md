@@ -2,6 +2,19 @@
 
 Using OpenCV2 and Numpy to track a robot. Specifically been used and tested with the Kaicong SIP 1602 Camera.
 
+**Table of Contents**
+
+- [Robot Tracking](#)
+- [Getting Started](#)
+- [Prerequisites](#)
+- [How we Connect to the robot](#)
+- [Running With Robot](#)
+- [Running without Robot](#)
+- [Changing Thresholds](#)
+- [Authors](#)
+- [Acknowledgments](#)
+
+
 ## Getting Started
 
 Clone Repo
