@@ -64,13 +64,20 @@ python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 This should open 3 Windows showing the alternate chassis, board, and original images.
 
 
-
+**Robot Picked**
 <img src="https://user-images.githubusercontent.com/14321139/34995801-d096836a-fa94-11e7-9c0d-7db769829056.PNG" alt="Robot Picked" width="320" height="240">
+
+**Front Picked**
+<img src="https://user-images.githubusercontent.com/14321139/34995798-cff908e2-fa94-11e7-96e2-6e31c177178c.PNG" alt="Front Picked" width="320" height="240">
+![board picked]( =320x240)
+
+**Centroids**
+<img src="https://user-images.githubusercontent.com/14321139/34995799-d02e19f6-fa94-11e7-850f-02060456b2b1.PNG" alt="Centroids" width="320" height="240">
+![centroided]( =320x240) -->
+
 
 <!--
 ![robot picked](https://user-images.githubusercontent.com/14321139/34995801-d096836a-fa94-11e7-9c0d-7db769829056.PNG =320x240)
-![board picked](https://user-images.githubusercontent.com/14321139/34995798-cff908e2-fa94-11e7-96e2-6e31c177178c.PNG =320x240)
-![centroided](https://user-images.githubusercontent.com/14321139/34995799-d02e19f6-fa94-11e7-850f-02060456b2b1.PNG =320x240) -->
 <!-- ![chassis blurred](https://user-images.githubusercontent.com/14321139/34995800-d06380f0-fa94-11e7-9eef-acd5436585af.PNG) -->
 <!-- ![board blurred](https://user-images.githubusercontent.com/14321139/34995802-d0cab61c-fa94-11e7-8883-2fd7bc34fc82.PNG) -->
 ## Changing Thresholds
