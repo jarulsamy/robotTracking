@@ -61,7 +61,9 @@ Call KaiVid/findRobot.py in CMD passing it the IP of the camera
 ```
 python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 ```
-This should open 3 Windows demonstrating the alternate chassis, board, and original images.
+This should open 3 Windows showing the alternate chassis, board, and original images.
+
+![alt text](https://raw.githubusercontent.com/JoshuaA9088/robotTracking/master/images/Robot Picked.jpg)
 
 ## Changing Thresholds
 To change the threshold to identify different colors edit the findRobot.py script
