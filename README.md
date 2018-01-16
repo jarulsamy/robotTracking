@@ -4,7 +4,6 @@ Using OpenCV2 and Numpy to track a robot. Specifically been used and tested with
 
 **Table of Contents**
 
-- [Robot Tracking](#)
 - [Getting Started](#)
 - [Prerequisites](#)
 - [How we Connect to the robot](#)
