@@ -61,7 +61,7 @@ Call KaiVid/findRobot.py in CMD passing it the IP of the camera
 ```
 python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 ```
-
+This should open 3 Windows demonstrating the alternate chassis, board, and original images. 
 
 ## Authors
 
