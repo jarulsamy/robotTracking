@@ -9,6 +9,7 @@ Using OpenCV2 and Numpy to track a robot. Specifically been used and tested with
 - [How we Connect to the robot](#)
 - [Running With Robot](#)
 - [Running without Robot](#)
+- [Result](#)
 - [Changing Thresholds](#)
 - [Authors](#)
 - [Acknowledgments](#)
@@ -80,6 +81,8 @@ Call KaiVid/findRobot.py in CMD passing it the IP of the camera
 ```
 python /WHERE YOU SAVED IT/KaiVid/findRobot.py #.#.#.#
 ```
+
+## Result
 This should open 3 Windows showing the alternate chassis, board, and original images.
 
 **Robot Picked**
