@@ -31,8 +31,9 @@ Clone Repo
   - Myro v2.99 or v2.95 (Pain to Install, Will have Image TK error, Ignore)
 
 ## How we Connect to the robot
-Due to the age of the Myro, it is only compatible with Python 2.4. Anything newer moved to Calico which at the moment does not support OpenCV. Listen.py connects to the robot in a Python 2.4 instance, then creates a listening server on port 10000.
+Due to the age of Myro, it is only compatible with Python 2.4. Anything newer moved to Calico which at the moment does not support OpenCV. Listen.py connects to the robot in a Python 2.4 instance, then creates a listening server on port 10000.
 The findRobot.py script, sends instructions to this server and moves the robot. Running without the robot is detailed down below.
+[Running without Robot](#)
 
 ## Running With Robot
 Before running the image processing script (findRobot.py) the pipeline server for Python 2.4 (listen.py) must be started.
@@ -115,3 +116,4 @@ Remember these values are in **BGR** NOT **RGB**
 ## Acknowledgments
 
 * **Roby Velez**
+* **Cameron Whiting**
