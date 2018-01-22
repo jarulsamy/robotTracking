@@ -3,7 +3,6 @@ import socket
 import sys
 import numpy as np
 import cv2
-import time
 
 # Color space info:
 # Good: YUV LUV YCR_CV
@@ -60,9 +59,6 @@ class KaicongVideo(KaicongInput):
 
 
 if __name__ == "__main__":
-    import numpy as np
-    import cv2
-    import sys
 
     if len(sys.argv) != 2:
         print "Usage: %s <ip_address>" % sys.argv[0]
@@ -101,7 +97,8 @@ if __name__ == "__main__":
         edgeBoard = cv2.Canny(maskBoard, 75, 200)
 
         im2Chassis, contoursChassis, hierarchyChassis = cv2.findContours(edgeChassis, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
-        im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
+        # im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
+        im2Board, contoursBoard, hierarchyBoard = cv2.findContours(edgeBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
 
         cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
         cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
@@ -142,8 +139,8 @@ if __name__ == "__main__":
         #     contour_list_board = contour_list_board[0]
 
         for contours in contour_list_chassis:
-            global cxC, cyC
             mChassis = cv2.moments(contours)
+            global cxC, cyC
             cxC = int(mChassis['m10']/mChassis['m00'])
             cyC = int(mChassis['m01']/mChassis['m00'])
             cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
@@ -166,10 +163,11 @@ if __name__ == "__main__":
             click = click[0]
             x = click[0]
             y = click[1]
+            print(x, y)
             s.send("turnLeft(1,1)")
 
         def click_and_crop(event, x, y, flags, param):
-            global mousePoint, cropping, boardPoints
+            global mousePoint, cropping
             if event == cv2.EVENT_LBUTTONUP:
                 mousePoint = [(x, y)]
                 cropping = True
