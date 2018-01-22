@@ -2,10 +2,8 @@ import sys
 sys.path.insert(0, 'C:\Python27\myro')
 from myro import *
 from graphics import *
-import cv2
 import numpy as np
 import urllib
-from math import *
 from colorsys import *
 
 
@@ -226,3 +224,4 @@ def robotPosition():
         print("Entire Robot is to left of click")
     if centroid[0] > mouseDown.marker[0] and centroid[2] > mouseDown.marker[0]:
         print("Entire Robot is to right of click")
+print(absX)
