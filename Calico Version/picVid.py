@@ -12,7 +12,6 @@ from colorsys import *
 
 def newPic():
         urllib.urlretrieve("http://192.168.0.100:81/snapshot.cgi?loginuse=admin&loginpas=123456","img.jpg")
-        global origPic
         origPic = makePicture("img.jpg")
 """
 def robot(x):
@@ -38,9 +37,6 @@ def findRobot():
     yBlackChassis = 0
     xBlackBoard = 0
     yBlackBoard = 0
-    #Values used by converter machines
-    yiqValues = []
-    yuvValues = []
 
 	#Goes through all pixels to getRGB
     for x in range (origPic.width):
@@ -196,7 +192,6 @@ def mouseDown(o, e):
     gridWin = getWindow("Grid")
     mouseDown.marker = [e.x, e.y]
     gridWin.draw(Circle((mouseDown.marker[0], mouseDown.marker[1]),5))
-    oldMouse = [e.x, e.y]
     orient()
     angle()
     hypoMovement()
