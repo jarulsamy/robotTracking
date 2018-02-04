@@ -25,7 +25,7 @@ ix, iy = -1, -1
 
 class KaicongVideo(KaicongInput):
     ### Initial Variable Decleration ###
-    global maxContourChassis, maxContourDataChassis, maxContourBoard, maxContourDataBoard, ix, iy
+    global maxContourChassis, maxContourDataChassis, maxContourBoard, maxContourDataBoard
     maxContourChassis = 0
     maxContourDataChassis = 0
     maxContourBoard = 0
