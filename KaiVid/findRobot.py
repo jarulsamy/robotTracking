@@ -161,12 +161,12 @@ if __name__ == "__main__":
         cv2.imshow('Blurred Chassis Image', blurredImgChassis)
         cv2.imshow('Board Image', boardImg)
         cv2.imshow('Blurred Board Image', blurredImgBoard)
-        #
-        def goToPoint(click):
-            click = click[0]
-            x = click[0]
-            y = click[1]
-            s.send("turnLeft(1,1)")
+
+        # def goToPoint(click):
+        #     click = click[0]
+        #     x = click[0]
+        #     y = click[1]
+        #     s.send("turnLeft(1,1)")
 
         def click_and_crop(event, x, y, flags, param):
             global mousePoint, cropping, boardPoints
