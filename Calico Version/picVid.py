@@ -2,25 +2,16 @@ import sys
 sys.path.insert(0, 'C:\Python27\myro')
 from myro import *
 from graphics import *
-<<<<<<< HEAD
 import cv2
 import numpy as np
 import urllib
 from math import *
-=======
-import numpy as np
-import urllib
->>>>>>> de51deeff1b49a937f529426b83e43fed5e52816
 from colorsys import *
 
 
 
 def newPic():
         urllib.urlretrieve("http://192.168.0.100:81/snapshot.cgi?loginuse=admin&loginpas=123456","img.jpg")
-<<<<<<< HEAD
-=======
-        global origPic
->>>>>>> de51deeff1b49a937f529426b83e43fed5e52816
         origPic = makePicture("img.jpg")
 """
 def robot(x):
@@ -46,12 +37,6 @@ def findRobot():
     yBlackChassis = 0
     xBlackBoard = 0
     yBlackBoard = 0
-<<<<<<< HEAD
-=======
-    #Values used by converter machines
-    yiqValues = []
-    yuvValues = []
->>>>>>> de51deeff1b49a937f529426b83e43fed5e52816
 
 	#Goes through all pixels to getRGB
     for x in range (origPic.width):
@@ -207,10 +192,6 @@ def mouseDown(o, e):
     gridWin = getWindow("Grid")
     mouseDown.marker = [e.x, e.y]
     gridWin.draw(Circle((mouseDown.marker[0], mouseDown.marker[1]),5))
-<<<<<<< HEAD
-=======
-    oldMouse = [e.x, e.y]
->>>>>>> de51deeff1b49a937f529426b83e43fed5e52816
     orient()
     angle()
     hypoMovement()
@@ -245,7 +226,3 @@ def robotPosition():
         print("Entire Robot is to left of click")
     if centroid[0] > mouseDown.marker[0] and centroid[2] > mouseDown.marker[0]:
         print("Entire Robot is to right of click")
-<<<<<<< HEAD
-=======
-print(absX)
->>>>>>> de51deeff1b49a937f529426b83e43fed5e52816
