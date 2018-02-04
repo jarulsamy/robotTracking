@@ -47,7 +47,7 @@ class KaicongMotor(KaicongOutput):
 
     def __init__(self, domain, user="admin", pwd="123456"):
         KaicongOutput.__init__(
-            self
+            self,
             domain,
             KaicongMotor.URI,
             user,
