@@ -72,7 +72,7 @@ if __name__ == "__main__":
             self.stream.close()
             self.p.terminate()
 
-    spkr = Speaker()    
+    spkr = Speaker()
     def play(data):
         spkr.play(np.fromstring(data, dtype=np.int16))
 
