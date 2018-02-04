@@ -56,7 +56,7 @@ if __name__ == "__main__":
         def __init__(self):
             CHUNK_SZ = 1016
             self.p = pyaudio.PyAudio()
-            self.stream = self.p.open(format = pyaudio.paInt16
+            self.stream = self.p.open(format = pyaudio.paInt16)
                             channels = KaicongAudio.NCHANNELS,
                             rate = KaicongAudio.RATE_HZ,
                             input = True,

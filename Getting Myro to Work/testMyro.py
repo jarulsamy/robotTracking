@@ -1,6 +1,4 @@
 ### testMyro ###
-
-import sys
 import cv2
 
 foo = cv2.imread('img.jpg')
