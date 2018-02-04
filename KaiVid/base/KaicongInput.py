@@ -5,9 +5,9 @@ import urllib2
 class KaicongInput():
 
     def __init__(self, callback, domain, uri_format, packet_size, user="admin", pwd="123456"):
-        """ domain:   Camera IP address or web domain
+""" domain:   Camera IP address or web domain
                       (e.g. 385345.kaicong.info)
-        """
+"""
         self.callback = callback
         self.running = False
         self.packet_size = packet_size
