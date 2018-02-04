@@ -19,7 +19,6 @@ s = socket.socket()
 ### Variables for click_and_crop ###
 mousePoint = []
 boardPoint = []
-cropping = False
 ix, iy = -1, -1
 ### Variables for click_and_crop ###
 
@@ -167,9 +166,7 @@ if __name__ == "__main__":
         def click_and_crop(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONUP:
                 mousePoint = [(x, y)]
-                cropping = True
                 mousePoint.append((x, y))
-                cropping = False
                 goToPoint(mousePoint)
 
         cv2.namedWindow("Original")
