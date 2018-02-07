@@ -155,7 +155,6 @@ if __name__ == "__main__":
             cyB = int(mBoard['m01']/mBoard['m00'])
             cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
 
-        # Draw Centorid
         cv2.imshow('Original', origPic)
         cv2.imshow('Chassis Image', chassisImg)
         cv2.imshow('Blurred Chassis Image', blurredImgChassis)
