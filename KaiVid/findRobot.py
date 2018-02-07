@@ -3,7 +3,6 @@ import socket
 import sys
 import numpy as np
 import cv2
-import time
 
 # Color space info:
 # Good: YUV LUV YCR_CV
@@ -20,13 +19,12 @@ s = socket.socket()
 ### Variables for click_and_crop ###
 mousePoint = []
 boardPoint = []
-cropping = False
 ix, iy = -1, -1
 ### Variables for click_and_crop ###
 
 class KaicongVideo(KaicongInput):
     ### Initial Variable Decleration ###
-    global maxContourChassis, maxContourDataChassis, maxContourBoard, maxContourDataBoard, ix, iy
+    global maxContourChassis, maxContourDataChassis, maxContourBoard, maxContourDataBoard
     maxContourChassis = 0
     maxContourDataChassis = 0
     maxContourBoard = 0
@@ -60,9 +58,6 @@ class KaicongVideo(KaicongInput):
 
 
 if __name__ == "__main__":
-    import numpy as np
-    import cv2
-    import sys
 
     if len(sys.argv) != 2:
         print "Usage: %s <ip_address>" % sys.argv[0]
@@ -101,7 +96,7 @@ if __name__ == "__main__":
         edgeBoard = cv2.Canny(maskBoard, 75, 200)
 
         im2Chassis, contoursChassis, hierarchyChassis = cv2.findContours(edgeChassis, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
-        im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
+        im2Board, contoursBoard, hierarchyBoard = cv2.findContours(edgeBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
 
         cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
         cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
@@ -160,20 +155,17 @@ if __name__ == "__main__":
         cv2.imshow('Blurred Chassis Image', blurredImgChassis)
         cv2.imshow('Board Image', boardImg)
         cv2.imshow('Blurred Board Image', blurredImgBoard)
-        #
-        def goToPoint(click):
-            click = click[0]
-            x = click[0]
-            y = click[1]
-            s.send("turnLeft(1,1)")
+
+        # def goToPoint(click):
+        #     click = click[0]
+        #     x = click[0]
+        #     y = click[1]
+        #     s.send("turnLeft(1,1)")
 
         def click_and_crop(event, x, y, flags, param):
-            global mousePoint, cropping, boardPoints
             if event == cv2.EVENT_LBUTTONUP:
                 mousePoint = [(x, y)]
-                cropping = True
                 mousePoint.append((x, y))
-                cropping = False
                 goToPoint(mousePoint)
 
         cv2.namedWindow("Original")

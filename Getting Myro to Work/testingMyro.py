@@ -1,6 +1,4 @@
 ### Testing Myro ###
-
-import sys
 sys.path.insert(0, 'C:\Python27\myro')
 from myro import *
 

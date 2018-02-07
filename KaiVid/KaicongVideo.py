@@ -36,9 +36,6 @@ class KaicongVideo(KaicongInput):
 
 
 if __name__ == "__main__":
-    import numpy as np
-    import cv2
-    import sys
 
     if len(sys.argv) != 2:
         print "Usage: %s <ip_address>" % sys.argv[0]
@@ -48,8 +45,8 @@ if __name__ == "__main__":
         redLower = np.array([0, 0, 125], dtype=np.uint8)
         redUpper = np.array([30, 100, 255], dtype=np.uint8)
 
-        greenLower = np.array([0,50,10], dtype=np.uint8)
-        greenUpper = np.array([20,255,40], dtype=np.uint8)
+        # greenLower = np.array([0,50,10], dtype=np.uint8)
+        # greenUpper = np.array([20,255,40], dtype=np.uint8)
 
         kernel = np.ones((5,5), np.uint8)
 
