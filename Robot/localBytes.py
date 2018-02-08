@@ -136,10 +136,5 @@ ENABLE_PAN     = 13;  # Fluke2 only
 
 PACKET_LENGTH = 9;
 
-
-with serial.Serial("COM3", 115200, timeout = 1) as ser:
-
-    def sendCommand(command, length)
-        ser.write(hex(command))
-        ser.read(length)
-        
+def decrypt(command):
+    print(hex(command))
