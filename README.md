@@ -29,7 +29,7 @@ Clone Repo
 - Python 2.4 (Used for connecting to robot)
   - PySerial Latest for Python 2.4
   - Image TK Latest for Python 2.4
-  - Myro v2.99 or v2.95 (Pain to Install, Will have Image TK error, Ignore)
+  - Myro v2.99 or v2.95 [Download](http://www.betterbots.com/download/myro-install-2.9.5.zip)
 
 ## How we Connect to the robot
 Due to the age of Myro, it is only compatible with Python 2.4. Anything newer moved to Calico which at the moment does not support OpenCV. Listen.py connects to the robot in a Python 2.4 instance, then creates a listening server on port 10000.
