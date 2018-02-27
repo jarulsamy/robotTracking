@@ -1,3 +1,7 @@
+############################
+### DO NOT COMMIT ME YET ###
+############################
+
 from base.KaicongInput import KaicongInput
 import socket
 import sys
@@ -13,7 +17,7 @@ import cv2
 HOST = '127.0.0.1'
 PORT = 10000
 s = socket.socket()
-s.connect((HOST, PORT))
+# s.connect((HOST, PORT))
 
 
 ### Variables for click_and_crop ###
@@ -69,7 +73,7 @@ if __name__ == "__main__":
         redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
 
         greenUpper = np.array([255, 50, 100], dtype=np.uint8) #Thresholds for board ID
-        greenLower = np.array([45, 0, 0], dtype=np.uint8) #Thresholds for board ID
+        greenLower = np.array([50, 0, 0], dtype=np.uint8) #Thresholds for board ID
 
         kernel = np.ones((5,5), np.uint8)
 
@@ -96,7 +100,6 @@ if __name__ == "__main__":
         edgeBoard = cv2.Canny(maskBoard, 75, 200)
 
         im2Chassis, contoursChassis, hierarchyChassis = cv2.findContours(edgeChassis, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
-        # im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
         im2Board, contoursBoard, hierarchyBoard = cv2.findContours(edgeBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
 
         cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
@@ -138,41 +141,59 @@ if __name__ == "__main__":
         #     contour_list_board = contour_list_board[0]
 
         for contours in contour_list_chassis:
-            mChassis = cv2.moments(contours)
             global cxC, cyC
-            cxC = int(mChassis['m10']/mChassis['m00'])
-            cyC = int(mChassis['m01']/mChassis['m00'])
+            mChassis = cv2.moments(contours)
+            cxC = int(mChassis['m10']/mChassis['m00']) #Centroid Calculation for x chassis
+            cyC = int(mChassis['m01']/mChassis['m00']) #Centroid Calculation for y chassis
             cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
 
         for contours in contour_list_board:
             mBoard = cv2.moments(contours)
             global cxB, cyB
-            cxB = int(mBoard['m10']/mBoard['m00'])
-            cyB = int(mBoard['m01']/mBoard['m00'])
+            cxB = int(mBoard['m10']/mBoard['m00']) #Centroid Calculation for x board
+            cyB = int(mBoard['m01']/mBoard['m00']) #Centroid Calculation for y board
             cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
 
+        # Somewhat redundant, should really be moved to for loop
+        global centroidChassis, centroidBoard
+        centroidChassis = (cxC, cyC)
+        centroidBoard = (cxB, cyB)
+
+        # Show all the images / update all the images
         cv2.imshow('Original', origPic)
         cv2.imshow('Chassis Image', chassisImg)
-        # cv2.imshow('Blurred Chassis Image', blurredImgChassis)
+        cv2.imshow('Blurred Chassis Image', blurredImgChassis)
         cv2.imshow('Board Image', boardImg)
         cv2.imshow('Blurred Board Image', blurredImgBoard)
-        #
-        def goToPoint(click):
-            click = click[0]
-            x = click[0]
-            y = click[1]
-            print(x, y)
-            s.send("turnLeft(1,1)")
 
-        def click_and_crop(event, x, y, flags, param):
-            global mousePoint, cropping
-            if event == cv2.EVENT_LBUTTONUP:
-                mousePoint = [(x, y)]
-                mousePoint.append((x, y))
-                goToPoint(mousePoint)
+        def orient(centroidChassis, centroidBoard):
+            difX = abs(centroidChassis[0] - centroidBoard[0])
+            difY = abs(centroidChassis[1] - centroidBoard[1])
+            if centroidChassis[0] < centroidBoard[0]:
+                print("Robot is facing left")
+                return 'left'
+            if centroidChsasis[1] < centroidBoard[1]:
+                print("Robot is facing down")
+                return 'down'
+            elif centroidChassis[0] > centroidBoard[0]:
+                print("Robot is facing right")
+                return 'right'
+            elif centroidChassis[1] > centroidBoard[1]:
+                print("Robot is facing up")
+                return 'up'
 
-        cv2.namedWindow("Original")
-        cv2.setMouseCallback("Original", click_and_crop)
+        direction = orient(centroidChassis, centroidBoard)
+
+        # Work in Progress Stuff / Concepts
+
+        def notFacingPoint():
+            pass
+
+        def facingPoint():
+            pass
+
+        def facingNearPoint():
+            pass
 
         if cv2.waitKey(1) == 27:
             s.close()
