@@ -7,6 +7,7 @@ import socket
 import sys
 import numpy as np
 import cv2
+import argparse
 
 # Color space info:
 # Good: YUV LUV YCR_CV
@@ -21,10 +22,14 @@ s = socket.socket()
 
 
 ### Variables for click_and_crop ###
-mousePoint = []
-boardPoint = []
-ix, iy = -1, -1
+# mousePoint = []
+# boardPoint = []
+# ix, iy = -1, -1
+pt = []
 ### Variables for click_and_crop ###
+
+centroidChassis = []
+centroidBoard = []
 
 class KaicongVideo(KaicongInput):
     ### Initial Variable Decleration ###
@@ -67,13 +72,23 @@ if __name__ == "__main__":
         print "Usage: %s <ip_address>" % sys.argv[0]
         sys.exit(-1)
 
+    def click(event, x, y, flags, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            global pt
+            pt = [x, y]
+        return pt
+
+
+
     def show_video(jpg):
+        contour_list_chassis = []
+        contour_list_board = []
         ### Defining Thresholds ###
         redUpper = np.array([100, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
         redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
 
-        greenUpper = np.array([255, 50, 100], dtype=np.uint8) #Thresholds for board ID
-        greenLower = np.array([50, 0, 0], dtype=np.uint8) #Thresholds for board ID
+        greenUpper = np.array([255, 200, 100], dtype=np.uint8) #Thresholds for board ID
+        greenLower = np.array([100, 0, 0], dtype=np.uint8) #Thresholds for board ID
 
         kernel = np.ones((5,5), np.uint8)
 
@@ -105,20 +120,12 @@ if __name__ == "__main__":
         cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
         cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
 
-        if mousePoint == []:
+        if pt == []:
             cv2.imshow('Original', origPic)
         else:
-            cv2.rectangle(origPic, mousePoint[0], mousePoint[1], (0, 255, 0), 10)
+            cv2.circle(origPic, (pt[0], pt[1]), 5,  (0, 255, 0), -1)
             cv2.imshow("Original", origPic)
 
-        if boardPoint == []:
-            cv2.imshow('Original', origPic)
-        else:
-            cv2.rectangle(origPic, boardPoint[0], boardPoint[1], (0, 255, 0), 10)
-            cv2.imshow("Original", origPic)
-
-        contour_list_chassis = []
-        contour_list_board = []
         # Much more elegant solution to grab largest blob / most circular blob
         for contourChassis in contoursChassis:
             approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
@@ -126,6 +133,7 @@ if __name__ == "__main__":
             if ((len(approx) > 8) & (area > 1000)):
                 contour_list_chassis.append(contourChassis)
 
+        # Much more elegant solution to grab largest blob / most circular blob
         for contourBoard in contoursBoard:
             approx = cv2.approxPolyDP(contourBoard, 0.01*cv2.arcLength(contourBoard, True), True)
             area = cv2.contourArea(contourBoard)
@@ -135,57 +143,69 @@ if __name__ == "__main__":
         cv2.drawContours(chassisImg, contour_list_chassis, -1, (0,255,0), 2)
         cv2.drawContours(boardImg, contour_list_board, -1, (0,255,0), 2)
 
-        # if (len(contour_list_chassis) > 1): # Memory management so list doesn't get so big and crash
-        #     contour_list_chassis = contour_list_chassis[0]
-        # if (len(contour_list_board) > 1): # Memory management so list doesn't get so big and crash
-        #     contour_list_board = contour_list_board[0]
-
         for contours in contour_list_chassis:
-            global cxC, cyC
             mChassis = cv2.moments(contours)
             cxC = int(mChassis['m10']/mChassis['m00']) #Centroid Calculation for x chassis
             cyC = int(mChassis['m01']/mChassis['m00']) #Centroid Calculation for y chassis
             cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
+            global centroidChassis
+            centroidChassis = [cxC, cyC]
 
         for contours in contour_list_board:
             mBoard = cv2.moments(contours)
-            global cxB, cyB
             cxB = int(mBoard['m10']/mBoard['m00']) #Centroid Calculation for x board
             cyB = int(mBoard['m01']/mBoard['m00']) #Centroid Calculation for y board
             cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
+            global centroidBoard
+            centroidBoard = [cxB, cyB]
 
-        # Somewhat redundant, should really be moved to for loop
-        global centroidChassis, centroidBoard
-        centroidChassis = (cxC, cyC)
-        centroidBoard = (cxB, cyB)
 
         # Show all the images / update all the images
         cv2.imshow('Original', origPic)
         cv2.imshow('Chassis Image', chassisImg)
-        cv2.imshow('Blurred Chassis Image', blurredImgChassis)
         cv2.imshow('Board Image', boardImg)
-        cv2.imshow('Blurred Board Image', blurredImgBoard)
 
-        def orient(centroidChassis, centroidBoard):
-            difX = abs(centroidChassis[0] - centroidBoard[0])
-            difY = abs(centroidChassis[1] - centroidBoard[1])
-            if centroidChassis[0] < centroidBoard[0]:
-                print("Robot is facing left")
+        def orientRobot(centroidChassis, centroidBoard):
+            if centroidChassis == [] or centroidBoard == []:
+                return "Either centroidChassis or centroidBoard is undefined"
+            else:
+                xDist = abs(centroidChassis[0] - centroidBoard[0])
+                yDist = abs(centroidChassis[1] - centroidBoard[1])
+            if centroidChassis[0] < centroidBoard[0] and xDist > yDist:
+                # print("Robot is facing left")
                 return 'left'
-            if centroidChsasis[1] < centroidBoard[1]:
-                print("Robot is facing down")
+            elif centroidChassis[1] < centroidBoard[1] and yDist > xDist:
+                # print("Robot is facing down")
                 return 'down'
-            elif centroidChassis[0] > centroidBoard[0]:
-                print("Robot is facing right")
+            elif centroidChassis[0] > centroidBoard[0] and xDist > yDist:
+                # print("Robot is facing right")
                 return 'right'
-            elif centroidChassis[1] > centroidBoard[1]:
-                print("Robot is facing up")
+            elif centroidChassis[1] > centroidBoard[1] and yDist > xDist:
+                # print("Robot is facing up")
                 return 'up'
+            else:
+                return 'Im confused'
+        robotDirection = orientRobot(centroidChassis, centroidBoard)
+        # print robotDirection
 
-        direction = orient(centroidChassis, centroidBoard)
+        # def pointLocation(centroidChassis, centroidBoard):
+        #     if centroidChassis == [] or centroidBoard == [] or pt == []:
+        #         return "Either centroidChassis or centroidBoard is undefined"
+        #     else:
+        #         xDist = abs(centroidChassis[0] - centroidBoard[0])
+        #         yDist = abs(centroidChassis[1] - centroidBoard[1])
+        #     if pt[0] > centroidChassis[0] and xDist > yDist:
+        #         return 'right'
+        #     elif pt[1] > centroidChassis[1] and yDist > xDist:
+        #         return 'up'
+        #     elif pt[0] < centroidChassis[0] and xDist > yDist:
+        #         return 'left'
+        #     elif pt[1] < centroidChassis[1] and yDist > xDist:
+        #         return 'down'
+        # robotVPoint = pointLocation(centroidChassis, centroidBoard)
+        # print robotVPoint
 
-        # Work in Progress Stuff / Concepts
-
+        
         def notFacingPoint():
             pass
 
@@ -200,4 +220,6 @@ if __name__ == "__main__":
             exit(0)
 
     video = KaicongVideo(sys.argv[1], show_video)
+    cv2.namedWindow("Original")
+    cv2.setMouseCallback("Original", click)
     video.run()
