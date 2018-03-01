@@ -7,7 +7,7 @@ import socket
 import sys
 import numpy as np
 import cv2
-import argparse
+import math
 
 # Color space info:
 # Good: YUV LUV YCR_CV
@@ -81,14 +81,15 @@ if __name__ == "__main__":
 
 
     def show_video(jpg):
-        contour_list_chassis = []
-        contour_list_board = []
         ### Defining Thresholds ###
         redUpper = np.array([100, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
         redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
 
         greenUpper = np.array([255, 200, 100], dtype=np.uint8) #Thresholds for board ID
         greenLower = np.array([100, 0, 0], dtype=np.uint8) #Thresholds for board ID
+
+        contour_list_chassis = []
+        contour_list_board = []
 
         kernel = np.ones((5,5), np.uint8)
 
@@ -159,64 +160,74 @@ if __name__ == "__main__":
             global centroidBoard
             centroidBoard = [cxB, cyB]
 
-
         # Show all the images / update all the images
-        cv2.imshow('Original', origPic)
-        cv2.imshow('Chassis Image', chassisImg)
-        cv2.imshow('Board Image', boardImg)
 
+        # Determines which way the robot is facing based on board centroid and chassis centroid
         def orientRobot(centroidChassis, centroidBoard):
             if centroidChassis == [] or centroidBoard == []:
-                return "Either centroidChassis or centroidBoard is undefined"
+                return "Either centroidChassis or centroidBoard is undefined or pt"
             else:
                 xDist = abs(centroidChassis[0] - centroidBoard[0])
                 yDist = abs(centroidChassis[1] - centroidBoard[1])
             if centroidChassis[0] < centroidBoard[0] and xDist > yDist:
-                # print("Robot is facing left")
                 return 'left'
             elif centroidChassis[1] < centroidBoard[1] and yDist > xDist:
-                # print("Robot is facing down")
                 return 'down'
             elif centroidChassis[0] > centroidBoard[0] and xDist > yDist:
-                # print("Robot is facing right")
                 return 'right'
             elif centroidChassis[1] > centroidBoard[1] and yDist > xDist:
-                # print("Robot is facing up")
                 return 'up'
             else:
-                return 'Im confused'
-        robotDirection = orientRobot(centroidChassis, centroidBoard)
-        # print robotDirection
+                return 'failed orientation'
 
-        # def pointLocation(centroidChassis, centroidBoard):
-        #     if centroidChassis == [] or centroidBoard == [] or pt == []:
-        #         return "Either centroidChassis or centroidBoard is undefined"
-        #     else:
-        #         xDist = abs(centroidChassis[0] - centroidBoard[0])
-        #         yDist = abs(centroidChassis[1] - centroidBoard[1])
-        #     if pt[0] > centroidChassis[0] and xDist > yDist:
-        #         return 'right'
-        #     elif pt[1] > centroidChassis[1] and yDist > xDist:
-        #         return 'up'
-        #     elif pt[0] < centroidChassis[0] and xDist > yDist:
-        #         return 'left'
-        #     elif pt[1] < centroidChassis[1] and yDist > xDist:
-        #         return 'down'
-        # robotVPoint = pointLocation(centroidChassis, centroidBoard)
-        # print robotVPoint
+        # Determines where mouse click is vs robot chassis centroid
+        def pointLocation(centroidChassis, centroidBoard, pt):
+            if centroidChassis == [] or centroidBoard == [] or pt == []:
+                return "Either centroidChassis or centroidBoard is undefined or pt"
+            else:
+                xDist = abs(centroidChassis[0] - pt[0])
+                yDist = abs(centroidChassis[1] - pt[1])
+            if pt[0] > centroidChassis[0] and xDist > yDist:
+                return 'right'
+            if pt[0] < centroidChassis[0] and xDist > yDist:
+                return 'left'
+            if pt[1] > centroidChassis[1] and yDist > xDist:
+                return 'down'
+            if pt[1] < centroidChassis[1] and yDist > xDist:
+                return 'up'
+            else:
+                return 'failed comparison'
 
-        
-        def notFacingPoint():
-            pass
+        robotDirection = orientRobot(centroidChassis, centroidBoard) # Which direction is the robot facing
+        robotVPoint = pointLocation(centroidChassis, centroidBoard, pt) # Where is the robot vs the mouse click
 
-        def facingPoint():
-            pass
+        def calculateDistance(pt1,pt2):
+            # dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+            if centroidChassis == [] or centroidBoard == [] or pt == []:
+                return "Either centroidChassis or centroidBoard is undefined or pt"
+            dist = math.sqrt((pt2[0] - pt1[0])**2 + (pt2[1] - pt1[1])**2)
+            return dist
 
-        def facingNearPoint():
-            pass
+            def goToPoint(facing):
+                if facing == False:
+                    s.send('motors(1,-1)')
+                    time.sleep(.1)
+                    s.send('stop')
+
+        chassisDistPoint = calculateDistance(centroidChassis, pt)
+        boardDistPoint = calculateDistance(centroidBoard, pt)
+
+        if chassisDistPoint > boardDistPoint:
+
+
+
+
+        cv2.imshow('Original', origPic)
+        cv2.imshow('Chassis Image', chassisImg)
+        cv2.imshow('Board Image', boardImg)
 
         if cv2.waitKey(1) == 27:
-            s.close()
+            # s.close()
             exit(0)
 
     video = KaicongVideo(sys.argv[1], show_video)
