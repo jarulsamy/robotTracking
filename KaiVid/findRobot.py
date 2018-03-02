@@ -195,8 +195,6 @@ if __name__ == "__main__":
         else:
             s.send('forward(.1,.1)')
 
-        ### Movement
-
         # Show all the images / update all the images
         cv2.imshow('Original', origPic)
         cv2.imshow('Chassis Image', chassisImg)
