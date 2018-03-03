@@ -174,11 +174,15 @@ if __name__ == "__main__":
         robotDirection = orientRobot(centroidChassis, centroidBoard) # Which direction is the robot facing
         robotVPoint = pointLocation(centroidChassis, centroidBoard, pt) # Where is the robot vs the mouse click
 
-        def calculateDistance(pt1,pt2):
+        def calculateDistanceOLD(pt1,pt2):
             # dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
             if centroidChassis == [] or centroidBoard == [] or pt == []:
                 return "One of the following is undefined: centroidChassis, centroidBoard, pt"
             dist = math.sqrt((pt2[0] - pt1[0])**2 + (pt2[1] - pt1[1])**2)
+            return dist
+
+        def calculateDistance(x1,y1,x2,y2):
+            dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
             return dist
 
         ### Movement / Sending to Robot ###
@@ -188,11 +192,9 @@ if __name__ == "__main__":
                 time.sleep(.05)
                 s.send('stop')
 
-        chassisDistPoint = calculateDistance(centroidChassis, pt)
-        boardDistPoint = calculateDistance(centroidBoard, pt)
-
-        print robotDirection
-        print robotVPoint
+        if pt != [] and centroidChassis != [] and centroidBoard != []:
+            chassisDistPoint = calculateDistance(centroidChassis[0], centroidChassis[1], pt[0], pt[1])
+            boardDistPoint = calculateDistance(centroidBoard[0], centroidBoard[1], pt[0], pt[1])
 
         if pt != []:
             if chassisDistPoint < 50:
@@ -200,13 +202,13 @@ if __name__ == "__main__":
                 s.send("stop()")
                 sys.exit()
                 return 'end'
-            #
+
             if robotDirection != robotVPoint:
-                # lookAtPoint(False)
-                if centroidBoard[0] < pt[0]:
+                lookAtPoint(False)
+                if centroidBoard[0] > pt[0]:
                     s.send('motors(-.1, .1)')
                     time.sleep(.05)
-                elif centroidBoard[0] > pt[0]:
+                elif centroidBoard[0] < pt[0]:
                     s.send('motors(.1, -.1)')
                     time.sleep(.05)
                 elif centroidBoard[1] > pt[1]:
