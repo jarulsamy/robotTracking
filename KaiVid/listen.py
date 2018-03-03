@@ -2,7 +2,9 @@
 import socket
 from threading import Thread
 from myro import *
+import time
 init("COM4")
+
 
 setLED("Left", "off")
 setLED("Right", "off")
@@ -24,7 +26,8 @@ def handle(clientsocket):
   while 1:
     buf = clientsocket.recv(MAX_LENGTH)
     try:
-        exec(buff)
+        exec(buf)
+        time.sleep(.001)
     except Exception:
         print("Ur command errored!!!")
     print buf
