@@ -4,11 +4,12 @@ import sys
 import numpy as np
 import cv2
 import math
+import time
 
 HOST = '127.0.0.1'
 PORT = 10000
 s = socket.socket()
-# s.connect((HOST, PORT)) # Comment me if no robot
+s.connect((HOST, PORT)) # Comment me if no robot
 
 pt = []
 centroidChassis = []
@@ -129,7 +130,7 @@ if __name__ == "__main__":
             mBoard = cv2.moments(contours)
             cxB = int(mBoard['m10']/mBoard['m00']) #Centroid Calculation for x board
             cyB = int(mBoard['m01']/mBoard['m00']) #Centroid Calculation for y board
-            cv2.circle(origPic, (cxB,cyB), 10, (255,0,0), -20) # Draws Centroid Board
+            cv2.circle(origPic, (cxB,cyB), 10, (0,0,255), -20) # Draws Centroid Board
             global centroidBoard
             centroidBoard = [cxB, cyB]
 
@@ -141,11 +142,11 @@ if __name__ == "__main__":
             else:
                 xDist = abs(centroidChassis[0] - centroidBoard[0])
                 yDist = abs(centroidChassis[1] - centroidBoard[1])
-            if centroidChassis[0] < centroidBoard[0] and xDist > yDist:
+            if centroidChassis[0] > centroidBoard[0] and xDist > yDist:
                 return 'left'
             elif centroidChassis[1] < centroidBoard[1] and yDist > xDist:
                 return 'down'
-            elif centroidChassis[0] > centroidBoard[0] and xDist > yDist:
+            elif centroidChassis[0] < centroidBoard[0] and xDist > yDist:
                 return 'right'
             elif centroidChassis[1] > centroidBoard[1] and yDist > xDist:
                 return 'up'
@@ -183,17 +184,45 @@ if __name__ == "__main__":
         ### Movement / Sending to Robot ###
         def lookAtPoint(facing):
             if facing == False:
-                s.send('motors(1,-1)')
-                time.sleep(.1)
+                s.send('motors(0.1, -0.1)')
+                time.sleep(.05)
                 s.send('stop')
 
         chassisDistPoint = calculateDistance(centroidChassis, pt)
         boardDistPoint = calculateDistance(centroidBoard, pt)
 
-        if chassisDistPoint > boardDistPoint:
-            lookAtPoint(False)
-        else:
-            s.send('forward(.1,.1)')
+        print robotDirection
+        print robotVPoint
+
+        if pt != []:
+            if chassisDistPoint < 50:
+                # break
+                s.send("stop()")
+                sys.exit()
+                return 'end'
+            #
+            if robotDirection != robotVPoint:
+                # lookAtPoint(False)
+                if centroidBoard[0] < pt[0]:
+                    s.send('motors(-.1, .1)')
+                    time.sleep(.05)
+                elif centroidBoard[0] > pt[0]:
+                    s.send('motors(.1, -.1)')
+                    time.sleep(.05)
+                elif centroidBoard[1] > pt[1]:
+                    s.send('motors(-.1, .1)')
+                    time.sleep(.05)
+                elif centroidBoard[1] < pt[1]:
+                    s.send('motors(.1, -.1)')
+                    time.sleep(.05)
+                else:
+                    s.send('stop()')
+                    time.sleep(.05)
+                    s.send('forward(.1,.1)')
+            else:
+                s.send('stop()')
+                time.sleep(.05)
+                s.send('forward(.1,.1)')
 
         # Show all the images / update all the images
         cv2.imshow('Original', origPic)
@@ -219,7 +248,8 @@ if __name__ == "__main__":
         cv2.setMouseCallback("Original", click_and_crop)
 
         if cv2.waitKey(1) == 27:
-            # s.close()
+            s.send("stop()")
+            s.close()
             exit(0)
 
     video = KaicongVideo(sys.argv[1], show_video)
