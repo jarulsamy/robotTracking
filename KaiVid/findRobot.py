@@ -174,13 +174,6 @@ if __name__ == "__main__":
         robotDirection = orientRobot(centroidChassis, centroidBoard) # Which direction is the robot facing
         robotVPoint = pointLocation(centroidChassis, centroidBoard, pt) # Where is the robot vs the mouse click
 
-        def calculateDistanceOLD(pt1,pt2):
-            # dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-            if centroidChassis == [] or centroidBoard == [] or pt == []:
-                return "One of the following is undefined: centroidChassis, centroidBoard, pt"
-            dist = math.sqrt((pt2[0] - pt1[0])**2 + (pt2[1] - pt1[1])**2)
-            return dist
-
         def calculateDistance(x1,y1,x2,y2):
             dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
             return dist
@@ -202,7 +195,8 @@ if __name__ == "__main__":
                 s.send("stop()")
                 sys.exit()
                 return 'end'
-
+            if boardDistPoint == chassisDistPoint:
+                print 'this should never happen, probably a centroid glitch'
             if robotDirection != robotVPoint:
                 lookAtPoint(False)
                 if centroidBoard[0] > pt[0]:
