@@ -1,6 +1,7 @@
 ## Robot Tracking
 
-Using OpenCV2 and Numpy to track a robot. Specifically been used and tested with the Kaicong SIP 1602 Camera.
+Using OpenCV2 and Numpy to track a scribbler 2 robot. Specifically been used and tested with the Kaicong SIP 1602 Camera.
+The ultimate objective of this script is to be able to click somewhere within a window and have the robot move to that location based on alternate color space tracking.
 
 **Table of Contents**
 
@@ -100,11 +101,11 @@ To change the threshold to identify different colors edit the findRobot.py scrip
 Scroll down to:
 
 ```
-redUpper = np.array([100, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
-redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
+redUpper = np.array([x, y, z], dtype=np.uint8) #Thresholds for chassis ID
+redLower = np.array([x, y, z], dtype=np.uint8) #Thresholds for chassis ID
 
-greenUpper = np.array([255, 50, 100], dtype=np.uint8) #Thresholds for board ID
-greenLower = np.array([50, 0, 0], dtype=np.uint8) #Thresholds for board ID
+greenUpper = np.array([x, y, z], dtype=np.uint8) #Thresholds for board ID
+greenLower = np.array([x, y, z], dtype=np.uint8) #Thresholds for board ID
 ```
 
 Red thresholds are for the chassis of the robot, green for the blue strip.
@@ -119,4 +120,3 @@ Remember these values are in **BGR** NOT **RGB**
 ## Acknowledgments
 
 * **Roby Velez**
-* **Cameron Whiting**
