@@ -54,19 +54,19 @@ if __name__ == "__main__":
         return pt
 
     def show_video(jpg):
-        redUpper = np.array([100, 150, 255], dtype=np.uint8) #Thresholds for chassis ID
-        redLower = np.array([0, 0, 100], dtype=np.uint8) #Thresholds for chassis ID
+        redUpper = np.array([100, 150, 255], dtype=np.uint8) # Upper threshold for chassis ID
+        redLower = np.array([0, 0, 100], dtype=np.uint8) #Lower threshold for chassis ID
 
-        greenUpper = np.array([255, 200, 100], dtype=np.uint8) #Thresholds for board ID
-        greenLower = np.array([100, 0, 0], dtype=np.uint8) #Thresholds for board ID
+        greenUpper = np.array([255, 200, 100], dtype=np.uint8) # Upper threshold for board ID
+        greenLower = np.array([100, 0, 0], dtype=np.uint8) # Lower threshold for board ID
 
-        contour_list_chassis = []
-        contour_list_board = []
+        contour_list_chassis = [] # List of all the contours for chassis. Cleared every frame to prevent memory issues
+        contour_list_board = [] # List of all the contours for board. Cleared every frame to prevent memory issues
 
         kernel = np.ones((5,5), np.uint8)
 
         # YUV and LUV Work really well here, currenty sets everything robot to white
-        readColors = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR) # Each new frame
+        readColors = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR) # Reads each new frame for colors
 
         origPic = readColors # Keeps an original unedited
         chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detection
@@ -83,40 +83,42 @@ if __name__ == "__main__":
         maskBoard = cv2.erode(maskBoard, kernel, iterations=2) # Erodes to get rid of random specks
         maskBoard = cv2.dilate(maskBoard, kernel, iterations=2) # Dialates to get rid of random specks
 
-        edgeChassis = cv2.Canny(maskChassis, 75, 200)
-        edgeBoard = cv2.Canny(maskBoard, 75, 200)
+        edgeChassis = cv2.Canny(maskChassis, 75, 200) # Runs cv2.canny to give us better contours
+        edgeBoard = cv2.Canny(maskBoard, 75, 200) # Runs cv2.canny to give us better contours
 
         im2Chassis, contoursChassis, hierarchyChassis = cv2.findContours(edgeChassis, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
         # im2Board, contoursBoard, hierarchyBoard = cv2.findContours(maskBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
         im2Board, contoursBoard, hierarchyBoard = cv2.findContours(edgeBoard, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE) #Find countour for masked image
 
-        cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on ALT Image
-        cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on ALT Image
+        cv2.drawContours(chassisImg, contoursChassis, -1, (0,0,255), 2) #Draw countours on alternate color space chassis image
+        cv2.drawContours(boardImg, contoursBoard, -1, (0,0,255), 2) #Draw countours on alternate color space board image
 
+        # Keep the mouse click even through frame updates
         if pt == []:
             cv2.imshow('Original', origPic)
         else:
             cv2.circle(origPic, (pt[0], pt[1]), 5,  (0, 255, 0), -1)
             cv2.imshow("Original", origPic)
 
-        # Much more elegant solution to grab largest blob / most circular blob
+        # Elegant solution to combine color and shape detection for chassis. Looks for most circular contour
         for contourChassis in contoursChassis:
             approx = cv2.approxPolyDP(contourChassis, 0.01*cv2.arcLength(contourChassis, True), True)
             area = cv2.contourArea(contourChassis)
             if ((len(approx) > 8) & (area > 1000)):
                 contour_list_chassis.append(contourChassis)
 
-        # Much more elegant solution to grab largest blob / most circular blob
+        # Elegant solution to combine color and shape detection for board. Looks for most rectangular contour
         for contourBoard in contoursBoard:
             approx = cv2.approxPolyDP(contourBoard, 0.01*cv2.arcLength(contourBoard, True), True)
             area = cv2.contourArea(contourBoard)
             if ((len(approx) > 0) & (area > 10)):
                 contour_list_board.append(contourBoard)
 
-        cv2.drawContours(chassisImg, contour_list_chassis, -1, (0,255,0), 2)
-        cv2.drawContours(boardImg, contour_list_board, -1, (0,255,0), 2)
+        cv2.drawContours(chassisImg, contour_list_chassis, -1, (0,255,0), 2) # Draw picked contour chassis
+        cv2.drawContours(boardImg, contour_list_board, -1, (0,255,0), 2) # Draw picked contour board
 
         ### Centroid Calculations ###
+        # All centroid calculations use the picked contours #
         for contours in contour_list_chassis:
             mChassis = cv2.moments(contours)
             global cxC, cyC
@@ -135,13 +137,15 @@ if __name__ == "__main__":
             centroidBoard = [cxB, cyB]
 
         ### Orientation ###
-        # Determines which way the robot is facing based on board centroid and chassis centroid
+        # Determines which way the robot is facing based on board centroid and chassis centroid #
+        # Intuative Orientation method #
         def orientRobot(centroidChassis, centroidBoard):
+            # Even if one centroid is missing keep moving to potentially find it later
             if centroidChassis == [] or centroidBoard == []:
                 return "One of the following is undefined: centroidChassis, centroidBoard, pt"
             else:
-                xDist = abs(centroidChassis[0] - centroidBoard[0])
-                yDist = abs(centroidChassis[1] - centroidBoard[1])
+                xDist = abs(centroidChassis[0] - centroidBoard[0]) # Calculate distance between chassis and board, little unnecessary, x
+                yDist = abs(centroidChassis[1] - centroidBoard[1]) # Calculate distance between chassis and board, little unnecessary, y
             if centroidChassis[0] > centroidBoard[0] and xDist > yDist:
                 return 'left'
             elif centroidChassis[1] < centroidBoard[1] and yDist > xDist:
@@ -153,13 +157,15 @@ if __name__ == "__main__":
             else:
                 return 'failed orientation'
 
-        # Determines where mouse click is vs robot chassis centroid
+        # Determines where mouse click is vs robot chassis centroid #
+        # Intuative Orientation Method #
         def pointLocation(centroidChassis, centroidBoard, pt):
+            # If screen hasn't been clicked, don't move
             if centroidChassis == [] or centroidBoard == [] or pt == []:
                 return "One of the following is undefined: centroidChassis, centroidBoard, pt"
             else:
-                xDist = abs(centroidChassis[0] - pt[0])
-                yDist = abs(centroidChassis[1] - pt[1])
+                xDist = abs(centroidChassis[0] - pt[0]) # Calculate distance between chassis and mouse click, x
+                yDist = abs(centroidChassis[1] - pt[1]) # Calculate distance between chassis and mouse click, y
             if pt[0] > centroidChassis[0] and xDist > yDist:
                 return 'right'
             if pt[0] < centroidChassis[0] and xDist > yDist:
@@ -174,6 +180,7 @@ if __name__ == "__main__":
         robotDirection = orientRobot(centroidChassis, centroidBoard) # Which direction is the robot facing
         robotVPoint = pointLocation(centroidChassis, centroidBoard, pt) # Where is the robot vs the mouse click
 
+        # Simple calculate distance function using Pythagoreum Theorum
         def calculateDistance(x1,y1,x2,y2):
             dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
             return dist
@@ -186,20 +193,22 @@ if __name__ == "__main__":
                 s.send('stop')
 
         if pt != [] and centroidChassis != [] and centroidBoard != []:
+            # If all three items are defined, keep doing calculations. Else: Keep moving a little bit to hopefully reobtain the centroid
             chassisDistPoint = calculateDistance(centroidChassis[0], centroidChassis[1], pt[0], pt[1])
             boardDistPoint = calculateDistance(centroidBoard[0], centroidBoard[1], pt[0], pt[1])
 
         if pt != []:
-            if chassisDistPoint < 50:
+            if chassisDistPoint < 50: # If statement to kill program after reaching a certain proximety to the point
                 # break
                 s.send("stop()")
                 sys.exit()
                 return 'end'
+            # Kind of unnecessary but will be added on to in the future
             if boardDistPoint == chassisDistPoint:
                 print 'this should never happen, probably a centroid glitch'
-            if robotDirection != robotVPoint:
+            if robotDirection != robotVPoint: # Turn until approx. face the clicked point
                 lookAtPoint(False)
-                if centroidBoard[0] > pt[0]:
+                if centroidBoard[0] > pt[0]: # All of this is intuative movement code, that doesn't really work
                     s.send('motors(-.1, .1)')
                     time.sleep(.05)
                 elif centroidBoard[0] < pt[0]:
@@ -243,13 +252,12 @@ if __name__ == "__main__":
         cv2.namedWindow("Original")
         cv2.setMouseCallback("Original", click_and_crop)
 
-        if cv2.waitKey(1) == 27:
+        if cv2.waitKey(1) == 27: # Close the windows and kill the program with Esc Key
             s.send("stop()")
             s.close()
             exit(0)
 
     video = KaicongVideo(sys.argv[1], show_video)
     cv2.namedWindow("Original")
-    # Calls click() when original picture is clicked on
-    cv2.setMouseCallback("Original", click)
+    cv2.setMouseCallback("Original", click) # Calls click() when original picture is clicked on
     video.run()
