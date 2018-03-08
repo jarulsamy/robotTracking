@@ -9,7 +9,7 @@ import time
 HOST = '127.0.0.1'
 PORT = 10000
 s = socket.socket()
-s.connect((HOST, PORT)) # Comment me if no robot
+s.connect((HOST, PORT)) # Comment me if no robot untested and may have some issues. Submit a pull request if there is a problem
 
 pt = []
 centroidChassis = []
