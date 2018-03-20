@@ -1,5 +1,5 @@
 ### Testing Myro ###
-sys.path.insert(0, 'C:\Python27\myro')
+sys.path.insert(0, 'C:\Python27\myro') # No Longer used # Now using pipeline to python 2.4
 from myro import *
 
 init("COM7")
