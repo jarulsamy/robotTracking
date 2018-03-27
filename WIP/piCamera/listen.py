@@ -29,7 +29,7 @@ def handle(clientsocket):
         exec(buf)
         time.sleep(.001)
     except Exception:
-        print("Ur command errored!!!")
+        print("Ur command errored!!!", buf)
     print buf
 
     if buf == '':
