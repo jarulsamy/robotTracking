@@ -1,3 +1,5 @@
+## Raspberry Pi Camera Running With Robot  
+
 **Table of Contents**
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
@@ -10,19 +12,46 @@
 Clone Repo (No official release built yet)
 
 ## Prerequisites
-- Python 2.7 (Used for image processing)
-  - Ensure **Python 2.7** is set in the environment variables of Windows
-- OpenCV v3.2 or v2.4
-- Numpy Latest
-- Pillow Latest
-- PySerial Latest
+- Raspberry Pi and Camera
+- Python 2.7
+- OpenCV v3.2
+- Numpy
+- PySerial V2.2 (Anything newer is not compatible with myro)
+- Myro v2.99 or v2.95: [Download](http://www.betterbots.com/download/myro-install-2.9.5.zip)
+
+## Raspberry Pi Setup
+  - Ensure that the Raspberry Pi is completely up to date with:
+  ```
+  sudo apt-get update  
+  sudo apt-get upgrade
+  ```
+  - Run ``` sudo raspi-config``` and enable the camera
+  - Python3 should be preinstalled with Raspbian, otherwise install it
+  - Install the following Packages
+    - picamera
+    - socketserver
+    - http  
+  - This script must be running on the raspberry pi at all times to connect to the camera:  [Download](https://gist.github.com/JoshuaA9088/a47b948ce61361230d387555eec84b57/archive/daa53c14bc95cb01e9cac1056fcfeab9c13dbf49.zip)
+
+## Changing Camera Properties
+**TODO**
+
+## Multithreading
+  To keep the robot from slowing down the image processing, the script is multithreaded. The class ``moveThread`` contains all orientation and movement code.
 
 ## Usage
-  Call findRobot.py through CMD passing it the IP of the camera:
+  Call findRobot.py through CMD passing it the IP of the Pi including port and the COM port of the robot. In this case the camera port should always be 8000 due to the custom script running on the Pi.
 
   ```
-  python vidOnly.py IP_ADDRESS
+  python findRobot.py IP_ADDRESS:8000 COMX
   ```  
+
+## Running without robot
+  To run the script without a robot, pass ``onlyVision`` instead of the com port
+
+  ```
+  python findRobot.py IP_ADDRESS:8000 onlyVision
+  ```
 
 ## Result
   This should open 3 Windows showing the alternate chassis, board, and original images.

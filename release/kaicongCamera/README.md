@@ -1,3 +1,5 @@
+## Kaicong Camera Running With Robot  
+
 **Table of Contents**
 
 - [Getting Started](#getting-started)
@@ -14,38 +16,31 @@
 Clone Repo (No official release built yet)
 
 ## Prerequisites
-- Python 2.7 (Used for image processing)
-  - Ensure **Python 2.7** is set in the environment variables of Windows **NOT** Python 2.4
-  - OpenCV v3.2 or v2.4
-  - Numpy Latest
-  - Pillow Latest
-  - PySerial Latest for Python 2.7
-- Python 2.4 (Used for connecting to robot)
-  - PySerial Latest
-  - Myro v2.99 or v2.95: [Download](http://www.betterbots.com/download/myro-install-2.9.5.zip)
+- Kaicong SIP 1602 Security Camera
+- Python 2.7
+- OpenCV v3.2
+- Numpy
+- PySerial V2.2 (Anything newer is not compatible with myro)
+- Myro v2.99 or v2.95: [Download](http://www.betterbots.com/download/myro-install-2.9.5.zip)
 
-## How we Connect to the robot
-  Due to the age of Myro, it is only compatible with Python 2.4. Anything newer moved to Calico which at the moment does not support OpenCV. Listen.py connects to the robot in a Python 2.4 instance, then creates a listening server on port 10000.
-  The findRobot.py script, sends instructions to this server and moves the robot. Running without the robot is detailed here: [Running Without Robot](https://github.com/Joshuaa9088/robotTracking/tree/master/release/only_vision/README.md)
+## Changing Camera Properties
+**TODO**
 
-**All files from here on are at release/robot**
-
-## Pipeline Server Script
-  Before running the image processing script (findRobot.py) the pipeline server for Python 2.4 (listen.py) must be started.
-  If you did not install Python 2.4 to the default directory, change the .bat file accordingly:
-
-## Changing Robot COM port
-  To change the robot COM port edit line 6 of the listen.py file:
-
-  ```
-  init("COMX")
-  ```
+## Multithreading
+  To keep the robot from slowing down the image processing, the script is multithreaded. The class ``moveThread`` contains all orientation and movement code.
 
 ## Usage
-  Call findRobot.py through CMD passing it the IP of the camera:
+  Call findRobot.py through CMD passing it the IP of the camera and the COM port of the robot:
 
   ```
-  python findRobot.py IP_ADDRESS
+  python findRobot.py IP_ADDRESS COMX
+  ```
+
+## Running without robot
+  To run the script without a robot, pass ``onlyVision`` instead of the com port
+
+  ```
+  python findRobot.py IP_ADDRESS:8000 onlyVision
   ```
 
 ## Result
