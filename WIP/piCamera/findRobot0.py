@@ -1,15 +1,12 @@
-
+### Usage: python findRobot.py IP_ADDRESS:PORT COMX
 import cv2
 import urllib
 import numpy as np
-import socket
 import sys
 import math
 import time
 import threading
 from myro import *
-
-
 
 # Initial Variable Decleration
 pt = []
@@ -207,19 +204,22 @@ def calcCentroids(contour_list_chassis, contour_list_board):
         global centroidBoard
         centroidBoard = [cxB, cyB]
 
-#stream=urllib.urlopen("http://%s/stream.mjpg")
-init(str(sys.argv[2]))
 URL =  "http://" + sys.argv[1] + "/stream.mjpg"
 stream = urllib.urlopen(URL)
 bytes=''
+
 # Create new thread to handle movement
-# moveThread = movementThread(1, 'movement', centroidChassis, centroidBoard, pt)
-moveThread = movementThread(1, 'movement')
+if sys.argv[2] == 'onlyVision':
+    pass
+else:
+    init(str(sys.argv[2])) # Inits robot after opening URL
+
+moveThread = movementThread(1, 'movement') # Creates new thread based on ID: 1 and Name: movement
 moveThread.daemon = True # Closes thread if main thread is closed
 moveThread.start() # Starts thread ONCE should never be in loop
 
 while True:
-    bytes+=stream.read(2048) # /2
+    bytes+=stream.read(2048) # Normally 1024, doubled for 60FPS
     a = bytes.find('\xff\xd8')
     b = bytes.find('\xff\xd9')
     if a!=-1 and b!=-1:
