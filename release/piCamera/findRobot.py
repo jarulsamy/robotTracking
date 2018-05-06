@@ -6,7 +6,7 @@ import sys
 import math
 import time
 import threading
-from myro import init, forward, backward, motors, wait, turnLeft, turnRight, stop
+
 
 # Initial Variable Decleration
 pt = []
@@ -212,6 +212,7 @@ bytes=''
 if sys.argv[2] == 'onlyVision':
     pass
 else:
+    from myro import init, forward, backward, motors, wait, turnLeft, turnRight, stop
     init(str(sys.argv[2])) # Inits robot after opening URL
 
 moveThread = movementThread(1, 'movement') # Creates new thread based on ID: 1 and Name: movement
@@ -233,5 +234,6 @@ while True:
         cv2.namedWindow("Original")
         cv2.setMouseCallback("Original", click) # Calls click() when original picture is clicked on
         if cv2.waitKey(1) ==27:
+            from myro import stop
             stop()
             exit(0)
