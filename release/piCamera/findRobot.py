@@ -6,7 +6,7 @@ import sys
 import math
 import time
 import threading
-from myro import *
+from myro import init, forward, backward, motors, wait, turnLeft, turnRight, stop
 
 # Initial Variable Decleration
 pt = []
