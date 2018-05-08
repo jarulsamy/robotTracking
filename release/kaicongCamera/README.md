@@ -20,7 +20,7 @@ Clone Repo (No official release built yet)
 - Python 2.7
 - OpenCV v3.2
 - Numpy
-- PySerial V2.2 (Anything newer is not compatible with myro)
+- PySerial V2.2 (Anything newer is not compatible with myro, should be included in myro download)
 - Myro v2.99 or v2.95: [Download](http://www.betterbots.com/download/myro-install-2.9.5.zip)
 
 ## Changing Camera Properties
