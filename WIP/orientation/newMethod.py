@@ -16,8 +16,9 @@ def click(event, x, y, flags, param):
 
 img = cv2.imread('Centroided.PNG')
 
-if cv2.waitKey(0) == 27
+if cv2.waitKey(0) == 27:
     cv2.destroyAllWindows()
+
 def show_video(readColors):
     redUpper = np.array([100, 150, 255], dtype=np.uint8) # Upper threshold for chassis ID
     redLower = np.array([0, 0, 100], dtype=np.uint8) #Lower threshold for chassis ID
@@ -106,7 +107,7 @@ def show_video(readColors):
     orient(centroidChassis, centroidBoard)
 def orient(centroidChassis, centroidBoard):
     if pt != []:
-        
+
 
 
 show_video(img)
