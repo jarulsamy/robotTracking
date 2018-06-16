@@ -20,41 +20,40 @@ class movementThread(threading.Thread):
         self.name = name
 
     def calcAngle(self, p1, p2): # Function to calculate angle between two points
-        self.ang1 = np.arctan2(*p1[::-1])
-        self.ang2 = np.arctan2(*p2[::-1])
-        return np.rad2deg((self.ang1 - self.ang2) % (2 * np.pi))
+        # Seperate coordinates to find deltas
+        x1 = p1[0]
+        y1 = p1[1]
+        x2 = p2[0]
+        y2 = p2[1]
+        deltax = x2 - x1
+        deltay = y2 - y1
+        # Find radian and degree measurements with atan2
+        self.angle_rad = math.atan2(deltay, deltax)
+        self.angle_deg = self.angle_rad*180.0/math.pi
 
-    def rotateAngle(self, angle):
-        motors(1,1)
-        time.sleep(angleTime)
-
-    def rotate(self):
-        if self.direction == "CCW":
-            motors(.05, -.05)
-        else:
-            motors(-.05, .05)
-
-        time.sleep(.1)
-        stop()
+        return self.angle_deg
 
     def run(self):
         while True:
             while(centroidChassis != [] and centroidBoard != [] and pt != []):
-                self.CBAngle = self.calcAngle(centroidChassis, centroidBoard) # Calculate angle between board and mouse click
-                self.BPAngle = self.calcAngle(centroidChassis, pt)
-                self.CBAngle += 5
-                if centroidBoard[0] < pt[0]:
-                    self.direction = 'CCW'
-                else:
-                    self.direction = 'CW'
-                if (abs(self.CBAngle - self.BPAngle) >= 3 ):
-                    self.rotate()
-                    print "Chassis -> Board", self.CBAngle
-                    print "Board -> PT", self.BPAngle
-                else:
-                    motors(.1, .1)
+                self.angleChassis = self.calcAngle(pt, centroidChassis)
+                self.angleBoard = self.calcAngle(pt, centroidBoard)
+                self.difference = self.angleChassis - self.angleBoard
+                # # self.angleDifference = math.sqrt(math.pow(angleChassis - angleBoard, 2))
+                # self.rotateDegree(self.angle)
+                # print(self.angleDifference)
+                # print(self.difference)
+                if self.difference > 5 or self.difference < -4:
+                    motors(-.5, .5)
+                    wait(.1)
                     stop()
-                time.sleep(.1)
+                else:
+                    stop()
+                print self.difference
+
+    def rotateDegree(self, degree):
+        # if degree >
+        pass
 
 if len(sys.argv) != 3:
     print "Usage: %s <ip_address:port COMX>" % sys.argv[0]
