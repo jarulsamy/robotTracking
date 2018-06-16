@@ -1,24 +1,17 @@
-import math
-import numpy as np
-import cv2
+from math import atan2, pi
 
-pic1 = cv2.imread("2.jpg")
-# pic2 = cv2.imread("2.jpg")
+# point 1
+x1 = 10
+y1 = 10
 
-redUpper = np.array([80, 40,  255], dtype=np.uint8) # Upper threshold for chassis ID # HSV VERSION
-redLower = np.array([0, 20, 0], dtype=np.uint8) #Lower threshold for chassis ID # HSV VERSION
+# point 2
+x2 = 20
+y2 = 20
 
-blueUpper = np.array([255, 180,  10], dtype=np.uint8) # Upper threshold for chassis ID # HSV VERSION
-blueLower = np.array([230, 160, 0], dtype=np.uint8) #Lower threshold for chassis ID # HSV VERSION
+deltax = x2 - x1
+deltay = y2 - y1
 
+angle_rad = atan2(deltay,deltax)
+angle_deg = angle_rad*180.0/pi
 
-# for contours in contoursRed:
-#     mRed = cv2.moments(contours)
-#     xRed = int(mRed['m10']/mRed['m00'])
-#     yRed = int(mRed['m01']/mRed['m00'])
-#     cv2.circle(pic1, (xRed, yRed), 10, (0, 255, 0), -20)
-#     centroidRed = (xRed, yRed)
-
-cv2.imshow("ofoo", pic1)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+print(angle_deg)
