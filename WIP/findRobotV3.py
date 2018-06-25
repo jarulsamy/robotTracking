@@ -1,12 +1,12 @@
 ### Usage: python findRobot.py IP_ADDRESS:PORT COMX
 import cv2
-import urllib2
+import urllib
 import numpy as np
 import sys
 import math
 import time
 import threading
-
+import urllib.request
 
 # Initial Variable Decleration
 pt = []
@@ -205,8 +205,10 @@ def calcCentroids(contour_list_chassis, contour_list_board):
         centroidBoard = [cxB, cyB]
 
 URL =  "http://" + sys.argv[1] + "/stream.mjpg"
-stream = urllib.urlopen(URL)
-bytes=''
+stream = urllib.request.urlopen(URL)
+bytes=bytes()
+
+# cap = cv2.VideoCapture(URL)
 
 # Create new thread to handle movement
 if sys.argv[2] == 'onlyVision':
@@ -220,9 +222,9 @@ moveThread.daemon = True # Closes thread if main thread is closed
 moveThread.start() # Starts thread ONCE should never be in loop
 
 while True:
-    bytes+=stream.read(2048) # Normally 1024, doubled for 60FPS
-    a = bytes.find('\xff\xd8')
-    b = bytes.find('\xff\xd9')
+    bytes += stream.read(1024)
+    a = bytes.find(b'\xff\xd8')
+    b = bytes.find(b'\xff\xd9')
     if a!=-1 and b!=-1:
         jpg = bytes[a:b+2]
         bytes= bytes[b+2:]
@@ -237,3 +239,5 @@ while True:
             from myro import stop
             stop()
             exit(0)
+    # ret, frame = cap.read()
+    # cv2.imshow('Original', frame)
