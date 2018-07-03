@@ -1,0 +1,52 @@
+filename,width,height,class,xmin,ymin,xmax,ymax
+2Q== (1).jpg,234,215,chassis,99,161,145,199
+2Q== (1).jpg,234,215,chassis,40,157,87,202
+2Q== (1).jpg,234,215,chassis,5,133,38,162
+2Q== (1).jpg,234,215,chassis,40,122,63,141
+2Q== (1).jpg,234,215,chassis,108,117,136,137
+2Q== (1).jpg,234,215,chassis,160,128,202,154
+2Q== (6).jpg,225,225,chassis,13,37,209,184
+2Q==.jpg,259,194,chassis,20,22,164,185
+2Q==.jpg,259,194,board,171,48,236,147
+9k= (1).jpg,225,225,chassis,98,98,181,157
+9k= (2).jpg,259,194,chassis,46,68,202,143
+9k= (2).jpg,259,194,board,140,28,191,66
+9k= (3).jpg,194,259,chassis,54,144,125,206
+9k= (3).jpg,194,259,chassis,71,68,105,91
+9k= (3).jpg,194,259,chassis,53,56,73,75
+9k= (3).jpg,194,259,chassis,77,47,98,64
+9k= (3).jpg,194,259,chassis,55,48,72,59
+9k= (4).jpg,265,190,chassis,14,15,252,179
+9k= (5).jpg,225,225,chassis,57,71,165,152
+9k= (6).jpg,239,211,chassis,20,129,54,148
+9k= (6).jpg,239,211,chassis,6,107,34,126
+9k= (6).jpg,239,211,chassis,34,48,52,65
+9k=.jpg,225,225,chassis,11,18,212,160
+Board (1).jpg,3024,4032,board,1001,7,2405,2990
+Board (2).jpg,3024,4032,board,1043,1,2930,2649
+Board (3).jpg,3024,4032,board,1263,486,2309,3511
+Board (4).jpg,3024,4032,board,1655,32,3024,3136
+Board (5).jpg,3024,4032,board,342,632,2172,3903
+Board (6).jpg,3024,4032,board,422,711,1972,3519
+Chassis (1).jpg,4032,3024,board,523,1999,2214,2421
+Chassis (1).jpg,4032,3024,chassis,739,1,2804,1934
+Chassis (10).jpg,3024,4032,chassis,1134,911,2897,2140
+Chassis (10).jpg,3024,4032,board,1555,232,2430,886
+Chassis (11).jpg,4032,3024,board,239,871,917,1671
+Chassis (11).jpg,4032,3024,chassis,889,653,2082,2168
+Chassis (2).jpg,3024,4032,board,959,990,1859,1469
+Chassis (2).jpg,3024,4032,chassis,747,1469,2067,2657
+Chassis (3).jpg,3024,4032,chassis,863,1482,2238,2632
+Chassis (3).jpg,3024,4032,board,1122,1032,1997,1449
+Chassis (4).jpg,3024,4032,chassis,1001,1469,2213,2624
+Chassis (4).jpg,3024,4032,board,1172,999,1967,1444
+Chassis (5).jpg,3024,4032,chassis,693,685,2222,1869
+Chassis (5).jpg,3024,4032,board,1080,57,1922,686
+Chassis (6).jpg,3024,4032,board,1409,178,2097,811
+Chassis (6).jpg,3024,4032,chassis,959,844,2497,1936
+Chassis (7).jpg,3024,4032,chassis,1133,974,2704,2078
+Chassis (7).jpg,3024,4032,board,1509,261,2209,928
+Chassis (8).jpg,3024,4032,board,1638,240,2342,961
+Chassis (8).jpg,3024,4032,chassis,1105,974,2884,2065
+Chassis (9).jpg,4032,3024,chassis,910,246,2107,1765
+Chassis (9).jpg,4032,3024,board,214,446,857,1303
