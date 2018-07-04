@@ -18,8 +18,6 @@ import cv2
 import threading
 import time
 
-# import keras
-
 CWD_PATH = os.getcwd()
 MODEL_NAME = 'scribbler_graph'
 PATH_TO_CKPT = os.path.join(CWD_PATH, 'object_detection', MODEL_NAME, 'frozen_inference_graph.pb')
@@ -67,19 +65,19 @@ with detection_graph.as_default():
         while True:
             startTime = time.time()
             image_np = imgThread.getFrame() # Grab image
-            #
+
             image_np_expanded = np.expand_dims(image_np, axis=0)
             image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
-            #
+
             boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
             scores = detection_graph.get_tensor_by_name('detection_scores:0')
             classes = detection_graph.get_tensor_by_name('detection_classes:0')
             num_detections = detection_graph.get_tensor_by_name('num_detections:0')
-            #
+
             (boxes, scores, classes, num_detections) = sess.run(
               [boxes, scores, classes, num_detections],
               feed_dict={image_tensor: image_np_expanded})
-            #
+
             vis_util.visualize_boxes_and_labels_on_image_array(
               image_np,
               np.squeeze(boxes),
@@ -91,6 +89,5 @@ with detection_graph.as_default():
             image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
             cv2.imshow("Detection", image_np)
             elapsedTime = time.time() - startTime
-            print("Processing Time: ", elapsedTime)
             if cv2.waitKey(1) ==27:
                 exit(0)
