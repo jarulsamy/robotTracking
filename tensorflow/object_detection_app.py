@@ -12,9 +12,18 @@ from object_detection.utils import visualization_utils as vis_util
 
 import urllib.request
 
+config = tf.ConfigProto()
+config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
+config.inter_op_parallelism_threads = 0
+os.environ["OMP_NUM_THREADS"] = "4"
+os.environ["KMP_BLOCKTIME"] = "0"
+os.environ["KMP_SETTINGS"] = "1"
+os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
+
 CWD_PATH = os.getcwd()
 
 MODEL_NAME = 'scribbler_graph'
+# MODEL_NAME = ''
 PATH_TO_CKPT = os.path.join(CWD_PATH, 'object_detection', MODEL_NAME, 'frozen_inference_graph.pb')
 PATH_TO_LABELS = os.path.join(CWD_PATH, 'object_detection', 'data', 'object-detection.pbtxt')
 
@@ -60,7 +69,7 @@ def worker(input_q, output_q):
             od_graph_def.ParseFromString(serialized_graph)
             tf.import_graph_def(od_graph_def, name='')
 
-        sess = tf.Session(graph=detection_graph)
+        sess = tf.Session(graph=detection_graph, config=config)
 
     while True:
         frame = input_q.get()
@@ -94,16 +103,18 @@ if __name__ == '__main__':
     pool = Pool(args.num_workers, worker, (input_q, output_q))
 
     URL = "http://10.0.0.101:8000/stream.mjpg"
-    cap = cv2.VideoCapture(URL)
+    cap = cv2.VideoCapture(0)
 
     while True:
+        startTime = time.time()
         ret, frame = cap.read()
         input_q.put(frame)
         t = time.time()
 
         output_rgb = cv2.cvtColor(output_q.get(), cv2.COLOR_RGB2BGR)
         cv2.imshow('Video', output_rgb)
-
+        elapsedTime = time.time() - startTime
+        print("Processing Time: ", elapsedTime)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
