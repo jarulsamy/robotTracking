@@ -58,12 +58,21 @@ IMAGE_SIZE = (12, 8)
 
 URL = "http://10.0.0.101:8000/stream.mjpg"
 # Setup thread to grab / convert color spaces of images
-imgThread = imageThread(1, 'image', URL)
+imgThread = imageThread(1, 'image', 0)
 imgThread.daemon = True
 imgThread.start()
 
+### PERFORAMCNE TUNING ###
+config = tf.ConfigProto()
+config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
+config.inter_op_parallelism_threads = 0
+os.environ["OMP_NUM_THREADS"] = "4"
+os.environ["KMP_BLOCKTIME"] = "0"
+os.environ["KMP_SETTINGS"] = "1"
+os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
+
 with detection_graph.as_default():
-    with tf.Session(graph=detection_graph) as sess:
+    with tf.Session(graph=detection_graph,config=config) as sess:
         while True:
             startTime = time.time()
             image_np = imgThread.getFrame() # Grab image
