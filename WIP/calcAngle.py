@@ -1,11 +1,9 @@
 import math
-
-p0 = (1, 0)
-p1 = (2, 2)
-
 from math import acos
 from math import sqrt
 from math import pi
+
+
 
 def length(v):
     return sqrt(v[0]**2+v[1]**2)
@@ -24,6 +22,3 @@ def angle_clockwise(A, B):
         return inner
     else: # if the det > 0 then A is immediately clockwise of B
         return 360-inner
-
-
-print angle_clockwise(p0, p1)

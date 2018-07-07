@@ -18,6 +18,7 @@ centroidChassis = []
 centroidBoard = []
 
 class movementThread(threading.Thread):
+
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
@@ -29,43 +30,53 @@ class movementThread(threading.Thread):
     #     ang1 = np.arctan2(*p1[::-1])
     #     ang2 = np.arctan2(*p2[::-1])
     #     return np.rad2deg((ang1 - ang2) % (2 * np.pi))
+    def calculateDistance(self, p0, p1):
+        x = p0[0] - p1[0]
+        y = p0[1] - p1[1]
+        ret = math.sqrt((x ** 2) + (y ** 2))
+        return ret
 
-    def length(self, v):
-        return sqrt(v[0]**2+v[1]**2)
+    def GetAngle(self,p1, p2):
+        x1, y1 = p1
+        x2, y2 = p2
+        dX = x2 = x1
+        dY = y2 - y1
+        rads = math.atan2 (-dY, dX) #wrong for finding angle/declination?
+        return math.degrees (rads)
 
-    def dot_product(self, v,w):
-       return v[0]*w[0]+v[1]*w[1]
 
-    def determinant(self, v,w):
-       return v[0]*w[1]-v[1]*w[0]
+    def dotproduct(self,v1, v2):
+      return sum((a*b) for a, b in zip(v1, v2))
 
-    def inner_angle(self, v,w):
-       cosx=self.dot_product(v,w)/(self.length(v)*self.length(w))
-       rad=acos(cosx) # in radians
-       return rad*180/pi # returns degrees
+    def length(self,v):
+      return math.sqrt(self.dotproduct(v, v))
 
-    def angle_clockwise(self, A, B):
-        inner=self.inner_angle(A,B)
-        det = self.determinant(A,B)
-        if det<0: #this is a property of the det. If the det < 0 then B is clockwise of A
-            return inner
-        else: # if the det > 0 then A is immediately clockwise of B
-            return 360-inner
+    def angle(self,v1, v2):
+      return math.acos(self.dotproduct(v1, v2) / (self.length(v1) * self.length(v2)))
 
-    def turnAngle(self, a):
-        # prof of concept
-        motors(1,1)
-        time.sleep(a)
-        stop()
 
     def run(self):
         while True:
             tupleCentroidBoard = tuple(centroidBoard)
             tuplePt = tuple(pt)
             if centroidBoard != [] and centroidChassis != [] and pt != []:
+                # print self.length(pt)
+                # chassisDistPoint = self.calculateDistance(centroidChassis, pt)
+                # boardDistPoint = self.calculateDistance(centroidBoard, pt)
+                # chassisDistBoard = self.calculateDistance(centroidChassis, centroidBoard)
+                #
+                # cosC = ((chassisDistPoint ** 2) - (boardDistPoint ** 2) + (chassisDistBoard ** 2)) / (2 * chassisDistPoint * boardDistPoint)
+                # cosC = math.degrees(math.cos(cosC))
+                # print cosC
                 # angle = self.angle_between(pt, centroidBoard)
-                self.angle = self.angle_clockwise(centroidBoard, pt)
-                print self.angle
+                self.calc = self.angle(pt, centroidBoard)
+                self.calc = math.degrees(self.calc)
+                print self.calc
+                # if self.angle > 5:
+                #     # turnBy(self.angle, "deg")
+                #     pass
+                # else:
+                #     forward(.1,.1)
 
 if len(sys.argv) != 3:
     print "Usage: %s <ip_address:port COMX>" % sys.argv[0]
@@ -75,14 +86,18 @@ def click(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         global pt
         pt = [x, y]
+        px = frame[x,y]
+        print px
     return pt
 
 def show_video(jpg):
     redUpper = np.array([230, 255, 200], dtype=np.uint8) # Upper threshold for chassis ID # HSV VERSION
     redLower = np.array([0, 120, 0], dtype=np.uint8) #Lower threshold for chassis ID # fail VERSION
 
-    greenUpper = np.array([255, 200, 20], dtype=np.uint8) # Upper threshold for board ID
-    greenLower = np.array([0, 20, 0], dtype=np.uint8) # Lower threshold for board ID
+    greenUpper = np.array([255, 100, 255], dtype=np.uint8) # Upper threshold for board ID
+    greenLower = np.array([100, 70, 0], dtype=np.uint8) # Lower threshold for board ID
+    # greenUpper = np.array([150, 130, 150], dtype=np.uint8) # Upper threshold for board ID
+    # greenLower = np.array([40, 30, 80], dtype=np.uint8) # Lower threshold for board ID
 
     kernel = np.ones((5,5), np.uint8)
 
@@ -120,11 +135,11 @@ def show_video(jpg):
         cv2.imshow('Original', origPic)
     else:
         cv2.circle(origPic, (pt[0], pt[1]), 5,  (0, 255, 0), -1)
-        tupleCentroidChassis = tuple(centroidChassis)
-        tupleCentroidBoard = tuple(centroidBoard)
-        tuplePt = tuple(pt)
-        cv2.line(origPic, tupleCentroidChassis, tuplePt, (0, 255, 0), thickness=3)
-        cv2.line(origPic, tupleCentroidBoard, tuplePt, (0, 255, 0), thickness=3)
+        # tupleCentroidChassis = tuple(centroidChassis)
+        # tupleCentroidBoard = tuple(centroidBoard)
+        # tuplePt = tuple(pt)
+        cv2.line(frame, tuple(centroidBoard), tuple(pt), (255, 0, 0), 5)
+        cv2.line(frame, tuple(centroidChassis), tuple(pt), (255, 0, 0), 5)
         cv2.imshow("Original", origPic)
 
     checkShape(contoursChassis, contoursBoard)
@@ -170,20 +185,24 @@ def calcCentroids(contour_list_chassis, contour_list_board):
         global centroidBoard
         centroidBoard = [cxB, cyB]
 
+
 URL =  "http://" + sys.argv[1] + "/stream.mjpg"
 stream = urllib.urlopen(URL)
 bytes=''
 
 # Create new thread to handle movement
-if sys.argv[2] == 'onlyVision':
-    pass
-else:
-    from myro import init, forward, backward, motors, wait, turnLeft, turnRight, stop
-    init(str(sys.argv[2])) # Inits robot after opening URL
+
 
 moveThread = movementThread(1, 'movement') # Creates new thread based on ID: 1 and Name: movement
 moveThread.daemon = True # Closes thread if main thread is closed
 moveThread.start() # Starts thread ONCE should never be in loop
+
+if sys.argv[2] == 'onlyVision':
+    pass
+else:
+    from myro import *
+    init(str(sys.argv[2])) # Inits robot after opening URL
+    setAngle(0)
 
 while True:
     bytes+=stream.read(2048) # Normally 1024, doubled for 60FPS
@@ -192,8 +211,11 @@ while True:
     if a!=-1 and b!=-1:
         jpg = bytes[a:b+2]
         bytes= bytes[b+2:]
+        global frame
         frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR) # Grabs frame from camera
         show_video(frame) # Passing each frame to show_video function
+
+
         cv2.imshow('Original', frame)
         cv2.imshow('Chassis Image', chassisImg)
         cv2.imshow('Board Image', boardImg)

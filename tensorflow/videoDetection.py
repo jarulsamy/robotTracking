@@ -58,7 +58,7 @@ IMAGE_SIZE = (12, 8)
 
 URL = "http://10.0.0.101:8000/stream.mjpg"
 # Setup thread to grab / convert color spaces of images
-imgThread = imageThread(1, 'image', 0)
+imgThread = imageThread(1, 'image', URL)
 imgThread.daemon = True
 imgThread.start()
 
