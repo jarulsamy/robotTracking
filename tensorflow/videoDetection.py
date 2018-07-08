@@ -88,7 +88,7 @@ with detection_graph.as_default():
             (boxes, scores, classes, num_detections) = sess.run(
               [boxes, scores, classes, num_detections],
               feed_dict={image_tensor: image_np_expanded})
-            #
+
             vis_util.visualize_boxes_and_labels_on_image_array(
               image_np,
               np.squeeze(boxes),
@@ -96,10 +96,11 @@ with detection_graph.as_default():
               np.squeeze(scores),
               category_index,
               use_normalized_coordinates=True,
-              line_thickness=8)
+              line_thickness=5)
+            print(boxes)
             image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
             cv2.imshow("Detection", image_np)
             elapsedTime = time.time() - startTime
-            print("Processing Time: ", elapsedTime)
-            if cv2.waitKey(1) ==27:
+            print("Processing Time: {}".format(elapsedTime))
+            if cv2.waitKey(1) == 27:
                 exit(0)
