@@ -21,8 +21,8 @@ import time
 # import keras
 
 CWD_PATH = os.getcwd()
-MODEL_NAME = 'scribbler_graph'
-PATH_TO_CKPT = os.path.join(CWD_PATH, 'object_detection', MODEL_NAME, 'frozen_inference_graph.pb')
+MODEL_NAME = 'final'
+PATH_TO_CKPT = os.path.join(CWD_PATH, 'object_detection', MODEL_NAME, 'scribbler_graph_back.pb')
 PATH_TO_LABELS = os.path.join(CWD_PATH, 'object_detection', 'data', 'object-detection.pbtxt')
 
 NUM_CLASSES = 2
@@ -65,9 +65,9 @@ imgThread.start()
 ### PERFORAMCNE TUNING ###
 config = tf.ConfigProto()
 config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
-config.inter_op_parallelism_threads = 0
+config.inter_op_parallelism_threads = 4
 os.environ["OMP_NUM_THREADS"] = "4"
-os.environ["KMP_BLOCKTIME"] = "0"
+os.environ["KMP_BLOCKTIME"] = "4"
 os.environ["KMP_SETTINGS"] = "1"
 os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
@@ -96,8 +96,9 @@ with detection_graph.as_default():
               np.squeeze(scores),
               category_index,
               use_normalized_coordinates=True,
+              min_score_thresh=.5,
               line_thickness=5)
-            print(boxes)
+            # print(boxes)
             image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
             cv2.imshow("Detection", image_np)
             elapsedTime = time.time() - startTime

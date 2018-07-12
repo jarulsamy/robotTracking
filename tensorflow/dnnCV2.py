@@ -6,7 +6,7 @@ import tensorflow as tf
 URL = "http://10.0.0.101:8000/stream.mjpg"
 cap = cv2.VideoCapture(URL)
 
-cvNet = cv2.dnn.readNetFromTensorflow('graph.pb', 'graph.pbtxt')
+cvNet = cv2.dnn.readNetFromTensorflow('final.pb', 'config.pbtxt')
 
 while True:
     ret, img = cap.read()
