@@ -1,0 +1,8 @@
+item{
+  id: 1
+  name: "chassis"
+}
+item{
+  id: 2
+  name: "board"
+}
