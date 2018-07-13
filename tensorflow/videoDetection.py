@@ -56,28 +56,28 @@ imgThread.daemon = True
 imgThread.start()
 
 ### PERFORAMCNE TUNING ###
-config = tf.ConfigProto()
-config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
-config.inter_op_parallelism_threads = 4
-os.environ["OMP_NUM_THREADS"] = "4"
-os.environ["KMP_BLOCKTIME"] = "4"
-os.environ["KMP_SETTINGS"] = "1"
-os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
+# config = tf.ConfigProto()
+# config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
+# config.inter_op_parallelism_threads = 4
+# os.environ["OMP_NUM_THREADS"] = "4"
+# os.environ["KMP_BLOCKTIME"] = "4"
+# os.environ["KMP_SETTINGS"] = "1"
+# os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
 with detection_graph.as_default():
-    with tf.Session(graph=detection_graph,config=config) as sess:
+    with tf.Session(graph=detection_graph) as sess:
         while True:
             startTime = time.time()
             image_np = imgThread.getFrame() # Grab image
-            #
+            
             image_np_expanded = np.expand_dims(image_np, axis=0)
             image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
-            #
+            
             boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
             scores = detection_graph.get_tensor_by_name('detection_scores:0')
             classes = detection_graph.get_tensor_by_name('detection_classes:0')
             num_detections = detection_graph.get_tensor_by_name('num_detections:0')
-            #
+            
             (boxes, scores, classes, num_detections) = sess.run(
               [boxes, scores, classes, num_detections],
               feed_dict={image_tensor: image_np_expanded})
