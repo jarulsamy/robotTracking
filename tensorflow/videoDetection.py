@@ -14,9 +14,9 @@ import threading
 import time
 
 CWD_PATH = os.getcwd()
-MODEL_NAME = 'final'
-PATH_TO_CKPT = os.path.join(CWD_PATH, 'object_detection', MODEL_NAME, 'scribbler_graph_back.pb')
-PATH_TO_LABELS = os.path.join(CWD_PATH, 'object_detection', 'data', 'object-detection.pbtxt')
+MODEL_NAME = 'scribbler_graph_qr_v2/'
+PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
+PATH_TO_LABELS = "object-detection.pbtxt"
 
 NUM_CLASSES = 2
 
