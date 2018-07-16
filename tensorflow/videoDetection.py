@@ -21,6 +21,10 @@ MODEL_NAME = 'scribbler_graph_qr_v4/'
 PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
 PATH_TO_LABELS = "object-detection.pbtxt"
 
+#
+# config = tf.ConfigProto(
+#         device_count = {'CPU': 0}
+#     )
 NUM_CLASSES = 2
 
 class imageThread(threading.Thread):
@@ -31,6 +35,7 @@ class imageThread(threading.Thread):
         self.name = name
         self.url = URL
         self.cap = cv2.VideoCapture(URL)
+        # self.cap = cv2.VideoCapture(0)
 
     def getFrame(self):
         ret, frame = self.cap.read()
@@ -68,22 +73,28 @@ imgThread.start()
 # os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
 with detection_graph.as_default():
-    with tf.Session(graph=detection_graph) as sess:
+    with tf.Session(graph=detection_graph, config=config) as sess:
         while True:
             startTime = time.time()
             image_np = imgThread.getFrame() # Grab image
-            
+
             image_np_expanded = np.expand_dims(image_np, axis=0)
             image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
-            
+
             boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
             scores = detection_graph.get_tensor_by_name('detection_scores:0')
             classes = detection_graph.get_tensor_by_name('detection_classes:0')
             num_detections = detection_graph.get_tensor_by_name('num_detections:0')
-            
+
             (boxes, scores, classes, num_detections) = sess.run(
               [boxes, scores, classes, num_detections],
               feed_dict={image_tensor: image_np_expanded})
+
+            height, width, channels = image_np.shape
+
+            boxes = np.squeeze(boxes)
+            classes = np.squeeze(classes)
+            scores = np.squeeze(scores)
 
             vis_util.visualize_boxes_and_labels_on_image_array(
               image_np,
@@ -94,9 +105,50 @@ with detection_graph.as_default():
               use_normalized_coordinates=True,
               min_score_thresh=.5,
               line_thickness=5)
-            # print(boxes)
+
+            # Chassis Centroid
+            if scores[0] > .5:
+                box = tuple(boxes[0].tolist())
+                xMin = box[0] * height
+                yMin = box[1] * width
+                xMax = box[2] * height
+                yMax = box[3] * width
+
+                xCenter = (xMax + xMin) / 2
+                yCenter = (yMax + yMin) / 2
+
+                xCenterChassis = int(xCenter)
+                yCenterChassis = int(yCenter)
+
+                cv2.circle(image_np, (yCenterChassis, xCenterChassis), 10,  (255, 0, 0), -1)
+
+            # QR Code Centroid
+            if scores[1] > .5:
+                box = tuple(boxes[1].tolist())
+                xMin = box[0] * height
+                yMin = box[1] * width
+                xMax = box[2] * height
+                yMax = box[3] * width
+
+                xCenter = (xMax + xMin) / 2
+                yCenter = (yMax + yMin) / 2
+
+                xCenterQr = int(xCenter)
+                yCenterQr = int(yCenter)
+
+                cv2.circle(image_np, (yCenterQr, xCenterQr), 10,  (0, 0, 255), -1)
+
             image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-            cv2.imshow("Detection", image_np)
+            if pt == []:
+                cv2.imshow('Detection', image_np)
+            else:
+                cv2.circle(image_np, (pt[0], pt[1]), 5,  (0, 255, 0), -1)
+                angleChassis = angle_clockwise((pt[0], pt[1]), (xCenterChassis, yCenterChassis))
+                print(angleChassis)
+                cv2.imshow("Detection", image_np)
+
+            cv2.namedWindow("Detection")
+            cv2.setMouseCallback("Detection", click)
             elapsedTime = time.time() - startTime
             print("Processing Time: {}".format(elapsedTime))
             if cv2.waitKey(1) == 27:
