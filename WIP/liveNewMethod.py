@@ -11,6 +11,19 @@ from math import acos
 from math import sqrt
 from math import pi
 
+import argparse
+
+parser = argparse.ArgumentParser(description="Move robot to click")
+
+parser.add_argument('-a', "--address", required=True,
+                    help='Specifiy IP Address of Camera')
+
+parser.add_argument("-r", "--robot", default='onlyVision', type=str,
+                    help="Com port of robot, If not specified, no robot is used")
+
+args = vars(parser.parse_args())
+
+
 
 # Initial Variable Decleration
 pt = []
@@ -57,9 +70,11 @@ class movementThread(threading.Thread):
 
     def run(self):
         while True:
-            tupleCentroidBoard = tuple(centroidBoard)
-            tuplePt = tuple(pt)
-            if centroidBoard != [] and centroidChassis != [] and pt != []:
+            pass
+                
+        #     tupleCentroidBoard = tuple(centroidBoard)
+        #     tuplePt = tuple(pt)
+        #     if centroidBoard != [] and centroidChassis != [] and pt != []:
                 # print self.length(pt)
                 # chassisDistPoint = self.calculateDistance(centroidChassis, pt)
                 # boardDistPoint = self.calculateDistance(centroidBoard, pt)
@@ -69,18 +84,14 @@ class movementThread(threading.Thread):
                 # cosC = math.degrees(math.cos(cosC))
                 # print cosC
                 # angle = self.angle_between(pt, centroidBoard)
-                self.calc = self.angle(pt, centroidBoard)
-                self.calc = math.degrees(self.calc)
-                print self.calc
+                # self.calc = self.angle(pt, centroidBoard)
+                # self.calc = math.degrees(self.calc)
+                # print self.calc
                 # if self.angle > 5:
                 #     # turnBy(self.angle, "deg")
                 #     pass
                 # else:
                 #     forward(.1,.1)
-
-if len(sys.argv) != 3:
-    print "Usage: %s <ip_address:port COMX>" % sys.argv[0]
-    sys.exit(-1)
 
 def click(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -88,16 +99,20 @@ def click(event, x, y, flags, param):
         pt = [x, y]
         px = frame[x,y]
         print px
+        # print chassisImg[pt], "chassis"
+        # print boardImg[pt], "board"
     return pt
 
 def show_video(jpg):
-    redUpper = np.array([230, 255, 200], dtype=np.uint8) # Upper threshold for chassis ID # HSV VERSION
-    redLower = np.array([0, 120, 0], dtype=np.uint8) #Lower threshold for chassis ID # fail VERSION
+    # Upper threshold for chassis ID # HSV VERSION
+    chassisUpper = np.array([90, 150, 155], dtype=np.uint8)
+    # Lower threshold for chassis ID # HSV VERSION
+    chassisLower = np.array([0, 100, 130], dtype=np.uint8)
 
-    greenUpper = np.array([255, 100, 255], dtype=np.uint8) # Upper threshold for board ID
-    greenLower = np.array([100, 70, 0], dtype=np.uint8) # Lower threshold for board ID
-    # greenUpper = np.array([150, 130, 150], dtype=np.uint8) # Upper threshold for board ID
-    # greenLower = np.array([40, 30, 80], dtype=np.uint8) # Lower threshold for board ID
+    # Upper threshold for board ID
+    boardUpper = np.array([200, 120, 50], dtype=np.uint8)
+    # Lower threshold for board ID
+    boardLower = np.array([80, 70, 0], dtype=np.uint8)
 
     kernel = np.ones((5,5), np.uint8)
 
@@ -105,19 +120,16 @@ def show_video(jpg):
 
     global origPic, chassisImg, boardImg
     origPic = readColors # Keeps an original unedited
-    # YUV and LUV Work really well here, currenty sets everything robot to white
     chassisImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2LUV) #Converts to LUV for chassis detection
-    # boardImg = cv2.cvtColor(readColors, cv2.COLOR_BGR2RGB) #Converts to LUV for chassis detection # This weird double line thing
-    # boardImg = cv2.cvtColor(boardImg, cv2.COLOR_RGB2BGR) #Converts to LUV for chassis detection # is to fix a bug
-    boardImg = readColors.copy()
+    boardImg = readColors.copy() # Make a copy of original to use for board detection
 
     blurredImgChassis = cv2.GaussianBlur(chassisImg, (11, 11), 10) #Blurs image to deal with noise
-    maskChassis = cv2.inRange(blurredImgChassis, redLower, redUpper) # Creates blob image based on threshold; redLower and redUpper
+    maskChassis = cv2.inRange(blurredImgChassis, chassisLower, chassisUpper) # Creates blob image based on threshold; chassisLower and chassisUpper
     maskChassis = cv2.erode(maskChassis, kernel, iterations=2) # Erodes to get rid of random specks
     maskChassis = cv2.dilate(maskChassis, kernel, iterations=2) # Dialates to get rid of random specks
 
     blurredImgBoard = cv2.GaussianBlur(boardImg, (11, 11), 10) #Blurs image to deal with noise
-    maskBoard = cv2.inRange(blurredImgBoard, greenLower, greenUpper) # Creates blob image based on threshold; greenLower and greenUpper
+    maskBoard = cv2.inRange(blurredImgBoard, boardLower, boardUpper) # Creates blob image based on threshold; boardLower and boardUpper
     maskBoard = cv2.erode(maskBoard, kernel, iterations=2) # Erodes to get rid of random specks
     maskBoard = cv2.dilate(maskBoard, kernel, iterations=2) # Dialates to get rid of random specks
 
@@ -140,7 +152,7 @@ def show_video(jpg):
         # tuplePt = tuple(pt)
         cv2.line(frame, tuple(centroidBoard), tuple(pt), (255, 0, 0), 5)
         cv2.line(frame, tuple(centroidChassis), tuple(pt), (255, 0, 0), 5)
-        cv2.imshow("Original", origPic)
+        # cv2.imshow("Original", origPic)
 
     checkShape(contoursChassis, contoursBoard)
 
@@ -166,14 +178,13 @@ def checkShape(contoursChassis, contoursBoard):
 
     calcCentroids(contour_list_chassis, contour_list_board)
 
-### Centroid Calculations ###
 # All centroid calculations use the picked contours #
 def calcCentroids(contour_list_chassis, contour_list_board):
     for contours in contour_list_chassis:
         mChassis = cv2.moments(contours)
         cxC = int(mChassis['m10']/mChassis['m00']) #Centroid Calculation for x chassis
         cyC = int(mChassis['m01']/mChassis['m00']) #Centroid Calculation for y chassis
-        cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis
+        cv2.circle(origPic, (cxC,cyC), 10, (255,0,0), -20) # Draws Centroid Chassis on origPic
         global centroidChassis
         centroidChassis = [cxC, cyC]
 
@@ -186,42 +197,39 @@ def calcCentroids(contour_list_chassis, contour_list_board):
         centroidBoard = [cxB, cyB]
 
 
-URL =  "http://" + sys.argv[1] + "/stream.mjpg"
-stream = urllib.urlopen(URL)
-bytes=''
+URL =  "http://" + args["address"] + "/stream.mjpg" # Create URL based on IP
+cap = cv2.VideoCapture(URL) # Start Video Capture
 
 # Create new thread to handle movement
-
-
 moveThread = movementThread(1, 'movement') # Creates new thread based on ID: 1 and Name: movement
 moveThread.daemon = True # Closes thread if main thread is closed
-moveThread.start() # Starts thread ONCE should never be in loop
+moveThread.start()  # Starts thread ONCE
 
-if sys.argv[2] == 'onlyVision':
-    pass
-else:
+if args["robot"] != "onlyVision": # If no robot specified, no init is attempted
     from myro import *
-    init(str(sys.argv[2])) # Inits robot after opening URL
+    init(args["robot"]) # Inits robot after opening URL
     setAngle(0)
+    motors(.1, -.1)
+
+
 
 while True:
-    bytes+=stream.read(2048) # Normally 1024, doubled for 60FPS
-    a = bytes.find('\xff\xd8')
-    b = bytes.find('\xff\xd9')
-    if a!=-1 and b!=-1:
-        jpg = bytes[a:b+2]
-        bytes= bytes[b+2:]
-        global frame
-        frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR) # Grabs frame from camera
-        show_video(frame) # Passing each frame to show_video function
-
-
+        ret, frame = cap.read() # Grab frame to video stream
+        show_video(frame)
+        # Show Original and alternate color space images
         cv2.imshow('Original', frame)
         cv2.imshow('Chassis Image', chassisImg)
         cv2.imshow('Board Image', boardImg)
+        
         cv2.namedWindow("Original")
         cv2.setMouseCallback("Original", click) # Calls click() when original picture is clicked on
+        
+        # When esc key is pressed, kill script
         if cv2.waitKey(1) ==27:
-            from myro import stop
-            stop()
-            exit(0)
+            if args["robot"] != "onlyVision":
+                from myro import stop
+                stop()
+                exit(0)
+            else:
+                cv2.destroyAllWindows()
+                exit(0)

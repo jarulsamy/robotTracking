@@ -7,25 +7,6 @@ node {
       type: DT_UINT8
     }
   }
-  attr {
-    key: "shape"
-    value {
-      shape {
-        dim {
-          size: -1
-        }
-        dim {
-          size: -1
-        }
-        dim {
-          size: -1
-        }
-        dim {
-          size: 3
-        }
-      }
-    }
-  }
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/Conv2D"
@@ -63,18 +44,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_0/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_0/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_0/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_0/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/Relu6"
@@ -171,18 +143,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_1_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_1_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_1_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_1_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6"
@@ -279,18 +242,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_2_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_2_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_2_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_2_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6"
@@ -387,18 +341,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_3_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_3_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_3_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_3_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6"
@@ -495,18 +440,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_4_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_4_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_4_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_4_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6"
@@ -603,18 +539,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_5_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_5_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_5_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_5_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6"
@@ -711,18 +638,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_6_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_6_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_6_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_6_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6"
@@ -819,18 +737,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_7_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_7_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_7_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_7_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6"
@@ -927,18 +836,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_8_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_8_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_8_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_8_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6"
@@ -1035,18 +935,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_9_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_9_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_9_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_9_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6"
@@ -1143,18 +1034,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_10_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_10_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_10_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_10_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6"
@@ -1251,18 +1133,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_11_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_11_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_11_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_11_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6"
@@ -1439,18 +1312,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_12_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_12_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_12_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_12_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6"
@@ -1547,103 +1411,14 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
   op: "Relu6"
   input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/BatchNorm/FusedBatchNorm"
-}
-node {
-  name: "BoxPredictor_1/ClassPredictor/Conv2D"
-  op: "Conv2D"
-  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
-  input: "BoxPredictor_1/ClassPredictor/weights"
-  attr {
-    key: "dilations"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-  attr {
-    key: "padding"
-    value {
-      s: "SAME"
-    }
-  }
-  attr {
-    key: "strides"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-}
-node {
-  name: "BoxPredictor_1/ClassPredictor/BiasAdd"
-  op: "BiasAdd"
-  input: "BoxPredictor_1/ClassPredictor/Conv2D"
-  input: "BoxPredictor_1/ClassPredictor/biases"
-}
-node {
-  name: "BoxPredictor_1/BoxEncodingPredictor/Conv2D"
-  op: "Conv2D"
-  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
-  input: "BoxPredictor_1/BoxEncodingPredictor/weights"
-  attr {
-    key: "dilations"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-  attr {
-    key: "padding"
-    value {
-      s: "SAME"
-    }
-  }
-  attr {
-    key: "strides"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-}
-node {
-  name: "BoxPredictor_1/BoxEncodingPredictor/BiasAdd"
-  op: "BiasAdd"
-  input: "BoxPredictor_1/BoxEncodingPredictor/Conv2D"
-  input: "BoxPredictor_1/BoxEncodingPredictor/biases"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/Conv2D"
@@ -1681,18 +1456,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/Relu6"
@@ -1735,103 +1501,14 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
   op: "Relu6"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/FusedBatchNorm"
-}
-node {
-  name: "BoxPredictor_2/ClassPredictor/Conv2D"
-  op: "Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
-  input: "BoxPredictor_2/ClassPredictor/weights"
-  attr {
-    key: "dilations"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-  attr {
-    key: "padding"
-    value {
-      s: "SAME"
-    }
-  }
-  attr {
-    key: "strides"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-}
-node {
-  name: "BoxPredictor_2/ClassPredictor/BiasAdd"
-  op: "BiasAdd"
-  input: "BoxPredictor_2/ClassPredictor/Conv2D"
-  input: "BoxPredictor_2/ClassPredictor/biases"
-}
-node {
-  name: "BoxPredictor_2/BoxEncodingPredictor/Conv2D"
-  op: "Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
-  input: "BoxPredictor_2/BoxEncodingPredictor/weights"
-  attr {
-    key: "dilations"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-  attr {
-    key: "padding"
-    value {
-      s: "SAME"
-    }
-  }
-  attr {
-    key: "strides"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-}
-node {
-  name: "BoxPredictor_2/BoxEncodingPredictor/BiasAdd"
-  op: "BiasAdd"
-  input: "BoxPredictor_2/BoxEncodingPredictor/Conv2D"
-  input: "BoxPredictor_2/BoxEncodingPredictor/biases"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/Conv2D"
@@ -1869,18 +1546,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/Relu6"
@@ -1923,103 +1591,14 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
   op: "Relu6"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/FusedBatchNorm"
-}
-node {
-  name: "BoxPredictor_3/ClassPredictor/Conv2D"
-  op: "Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
-  input: "BoxPredictor_3/ClassPredictor/weights"
-  attr {
-    key: "dilations"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-  attr {
-    key: "padding"
-    value {
-      s: "SAME"
-    }
-  }
-  attr {
-    key: "strides"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-}
-node {
-  name: "BoxPredictor_3/ClassPredictor/BiasAdd"
-  op: "BiasAdd"
-  input: "BoxPredictor_3/ClassPredictor/Conv2D"
-  input: "BoxPredictor_3/ClassPredictor/biases"
-}
-node {
-  name: "BoxPredictor_3/BoxEncodingPredictor/Conv2D"
-  op: "Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
-  input: "BoxPredictor_3/BoxEncodingPredictor/weights"
-  attr {
-    key: "dilations"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-  attr {
-    key: "padding"
-    value {
-      s: "SAME"
-    }
-  }
-  attr {
-    key: "strides"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-}
-node {
-  name: "BoxPredictor_3/BoxEncodingPredictor/BiasAdd"
-  op: "BiasAdd"
-  input: "BoxPredictor_3/BoxEncodingPredictor/Conv2D"
-  input: "BoxPredictor_3/BoxEncodingPredictor/biases"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/Conv2D"
@@ -2057,18 +1636,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/Relu6"
@@ -2111,103 +1681,14 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
   op: "Relu6"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/FusedBatchNorm"
-}
-node {
-  name: "BoxPredictor_4/ClassPredictor/Conv2D"
-  op: "Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
-  input: "BoxPredictor_4/ClassPredictor/weights"
-  attr {
-    key: "dilations"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-  attr {
-    key: "padding"
-    value {
-      s: "SAME"
-    }
-  }
-  attr {
-    key: "strides"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-}
-node {
-  name: "BoxPredictor_4/ClassPredictor/BiasAdd"
-  op: "BiasAdd"
-  input: "BoxPredictor_4/ClassPredictor/Conv2D"
-  input: "BoxPredictor_4/ClassPredictor/biases"
-}
-node {
-  name: "BoxPredictor_4/BoxEncodingPredictor/Conv2D"
-  op: "Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
-  input: "BoxPredictor_4/BoxEncodingPredictor/weights"
-  attr {
-    key: "dilations"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-  attr {
-    key: "padding"
-    value {
-      s: "SAME"
-    }
-  }
-  attr {
-    key: "strides"
-    value {
-      list {
-        i: 1
-        i: 1
-        i: 1
-        i: 1
-      }
-    }
-  }
-}
-node {
-  name: "BoxPredictor_4/BoxEncodingPredictor/BiasAdd"
-  op: "BiasAdd"
-  input: "BoxPredictor_4/BoxEncodingPredictor/Conv2D"
-  input: "BoxPredictor_4/BoxEncodingPredictor/biases"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/Conv2D"
@@ -2245,18 +1726,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/Relu6"
@@ -2299,18 +1771,9 @@ node {
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/FusedBatchNorm"
-  op: "FusedBatchNorm"
+  op: "BiasAdd"
   input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/Conv2D"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/gamma"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/beta"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/moving_mean"
-  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/moving_variance"
-  attr {
-    key: "epsilon"
-    value {
-      f: 0.0010000000475
-    }
-  }
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/Conv2D_bn_offset"
 }
 node {
   name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/Relu6"
@@ -2396,6 +1859,326 @@ node {
   op: "BiasAdd"
   input: "BoxPredictor_5/BoxEncodingPredictor/Conv2D"
   input: "BoxPredictor_5/BoxEncodingPredictor/biases"
+}
+node {
+  name: "BoxPredictor_4/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
+  input: "BoxPredictor_4/ClassPredictor/weights"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_4/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_4/ClassPredictor/Conv2D"
+  input: "BoxPredictor_4/ClassPredictor/biases"
+}
+node {
+  name: "BoxPredictor_4/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
+  input: "BoxPredictor_4/BoxEncodingPredictor/weights"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_4/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_4/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_4/BoxEncodingPredictor/biases"
+}
+node {
+  name: "BoxPredictor_3/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
+  input: "BoxPredictor_3/ClassPredictor/weights"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_3/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_3/ClassPredictor/Conv2D"
+  input: "BoxPredictor_3/ClassPredictor/biases"
+}
+node {
+  name: "BoxPredictor_3/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
+  input: "BoxPredictor_3/BoxEncodingPredictor/weights"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_3/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_3/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_3/BoxEncodingPredictor/biases"
+}
+node {
+  name: "BoxPredictor_2/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
+  input: "BoxPredictor_2/ClassPredictor/weights"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_2/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_2/ClassPredictor/Conv2D"
+  input: "BoxPredictor_2/ClassPredictor/biases"
+}
+node {
+  name: "BoxPredictor_2/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
+  input: "BoxPredictor_2/BoxEncodingPredictor/weights"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_2/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_2/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_2/BoxEncodingPredictor/biases"
+}
+node {
+  name: "BoxPredictor_1/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
+  input: "BoxPredictor_1/ClassPredictor/weights"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_1/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_1/ClassPredictor/Conv2D"
+  input: "BoxPredictor_1/ClassPredictor/biases"
+}
+node {
+  name: "BoxPredictor_1/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
+  input: "BoxPredictor_1/BoxEncodingPredictor/weights"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_1/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_1/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_1/BoxEncodingPredictor/biases"
 }
 node {
   name: "concat/axis_flatten"

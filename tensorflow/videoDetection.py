@@ -17,12 +17,15 @@ from PIL import ImageGrab
 
 
 CWD_PATH = os.getcwd()
+<<<<<<< HEAD
 MODEL_NAME = 'scribbler_graph_qr_v4/'
 PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
+=======
+FOLDER_NAME = 'scribbler_graph_qr_v2/'
+PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(FOLDER_NAME)
+>>>>>>> 0d52250... Added args parse in WIP version
 PATH_TO_LABELS = "object-detection.pbtxt"
 
-#
-#     )
 NUM_CLASSES = 2
 
 class imageThread(threading.Thread):
@@ -48,6 +51,7 @@ with detection_graph.as_default():
         serialized_graph = fid.read()
         od_graph_def.ParseFromString(serialized_graph)
         tf.import_graph_def(od_graph_def, name='')
+
 # Load label map
 label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
 categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
@@ -107,10 +111,10 @@ with detection_graph.as_default():
             # Chassis Centroid
             if scores[0] > .5:
                 box = tuple(boxes[0].tolist())
-                xMin = box[0] * height
-                yMin = box[1] * width
-                xMax = box[2] * height
-                yMax = box[3] * width
+                yMin = box[0] * height
+                xMin = box[1] * width
+                yMax = box[2] * height
+                xMax = box[3] * width
 
                 xCenter = (xMax + xMin) / 2
                 yCenter = (yMax + yMin) / 2
@@ -118,15 +122,15 @@ with detection_graph.as_default():
                 xCenterChassis = int(xCenter)
                 yCenterChassis = int(yCenter)
 
-                cv2.circle(image_np, (yCenterChassis, xCenterChassis), 10,  (255, 0, 0), -1)
+                cv2.circle(image_np, (xCenterChassis, yCenterChassis), 10,  (255, 0, 0), -1)
 
             # QR Code Centroid
             if scores[1] > .5:
                 box = tuple(boxes[1].tolist())
-                xMin = box[0] * height
-                yMin = box[1] * width
-                xMax = box[2] * height
-                yMax = box[3] * width
+                yMin = box[0] * height
+                xMin = box[1] * width
+                yMax = box[2] * height
+                xMax = box[3] * width
 
                 xCenter = (xMax + xMin) / 2
                 yCenter = (yMax + yMin) / 2
@@ -134,16 +138,21 @@ with detection_graph.as_default():
                 xCenterQr = int(xCenter)
                 yCenterQr = int(yCenter)
 
-                cv2.circle(image_np, (yCenterQr, xCenterQr), 10,  (0, 0, 255), -1)
+                cv2.circle(image_np, (xCenterQr, yCenterQr), 10,  (0, 0, 255), -1)
 
             image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
             if pt == []:
                 cv2.imshow('Detection', image_np)
             else:
                 cv2.circle(image_np, (pt[0], pt[1]), 5,  (0, 255, 0), -1)
-                angleChassis = angle_clockwise((pt[0], pt[1]), (xCenterChassis, yCenterChassis))
+                angleChassis = angle_clockwise(tuple(pt), (xCenterChassis, yCenterChassis))
                 print(angleChassis)
+                cv2.line(image_np, tuple(pt), (xCenterChassis, yCenterChassis), (0, 0, 255), thickness=3)
+                cv2.line(image_np, tuple(pt), (xCenterQr, yCenterQr), (255, 0, 0), thickness=3)
+                
+                
                 cv2.imshow("Detection", image_np)
+                
 
             cv2.namedWindow("Detection")
             cv2.setMouseCallback("Detection", click)
