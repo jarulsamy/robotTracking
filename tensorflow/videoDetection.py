@@ -22,8 +22,6 @@ PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
 PATH_TO_LABELS = "object-detection.pbtxt"
 
 #
-# config = tf.ConfigProto(
-#         device_count = {'CPU': 0}
 #     )
 NUM_CLASSES = 2
 
