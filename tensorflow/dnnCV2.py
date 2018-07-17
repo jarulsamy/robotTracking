@@ -35,7 +35,7 @@ cap = cv.VideoCapture(URL)
 
 cvNet = cv.dnn.readNetFromTensorflow('scribbler_graph_qr_v2/dnn.pb', 'graph.pbtxt')
 while True:
-    ret, frame = cap.read()
+    ret, img = cap.read()
     rows = img.shape[0]
     cols = img.shape[1]
     cvNet.setInput(cv.dnn.blobFromImage(img, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))

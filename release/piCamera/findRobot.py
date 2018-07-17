@@ -116,7 +116,7 @@ def click(event, x, y, flags, param):
         pt = [x, y]
     return pt
 
-def show_video(jpg):
+def show_video(readColors):
     redUpper = np.array([200, 255, 200], dtype=np.uint8) # Upper threshold for chassis ID # HSV VERSION
     redLower = np.array([0, 150, 0], dtype=np.uint8) #Lower threshold for chassis ID # HSV VERSION
 
@@ -124,9 +124,6 @@ def show_video(jpg):
     greenLower = np.array([0, 20, 0], dtype=np.uint8) # Lower threshold for board ID
 
     kernel = np.ones((5,5), np.uint8)
-
-    # YUV and LUV Work really well here, currenty sets everything robot to white
-    readColors = jpg
 
     global origPic, chassisImg, boardImg
     origPic = readColors # Keeps an original unedited

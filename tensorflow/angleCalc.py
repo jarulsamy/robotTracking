@@ -21,4 +21,8 @@ def angle_clockwise(A, B):
         return 360-inner
 
 if __name__ == "__main__":
+    a = (1,1)
+    b = (2,2)
+    print(angle_clockwise(a,b))
+    
     pass
