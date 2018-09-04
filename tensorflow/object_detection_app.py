@@ -6,6 +6,10 @@ import multiprocessing
 import numpy as np
 import tensorflow as tf
 
+import sys
+sys.path.append('C:/Users/Joshua/repos/models') # point to your tensorflow dir
+sys.path.append('C:/Users/Joshua/repos/models/slim') # point ot your slim dir
+
 from multiprocessing import Queue, Pool
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
@@ -25,8 +29,8 @@ CWD_PATH = os.getcwd()
 MODEL_NAME = 'scribbler_graph'
 # MODEL_NAME = ''
 PATH_TO_CKPT = os.path.join(CWD_PATH, 'object_detection', MODEL_NAME, 'frozen_inference_graph.pb')
-PATH_TO_LABELS = os.path.join(CWD_PATH, 'object_detection', 'data', 'object-detection.pbtxt')
-
+# PATH_TO_LABELS = os.path.join(CWD_PATH, 'object_detection', 'data', 'object-detection.pbtxt')
+PATH_TO_LABELS = "object-detection.pbtxt"
 NUM_CLASSES = 2
 
 # Loading label map
