@@ -13,8 +13,11 @@ import cv2
 import threading
 import time
 
+from PIL import ImageGrab
+
+
 CWD_PATH = os.getcwd()
-MODEL_NAME = 'scribbler_graph_qr_v2/'
+MODEL_NAME = 'scribbler_graph_qr_v4/'
 PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
 PATH_TO_LABELS = "object-detection.pbtxt"
 
@@ -55,7 +58,7 @@ imgThread = imageThread(1, 'image', URL)
 imgThread.daemon = True
 imgThread.start()
 
-### PERFORAMCNE TUNING ###
+### PERFORAMCNE TUNING CPU ONLY###
 # config = tf.ConfigProto()
 # config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
 # config.inter_op_parallelism_threads = 4
