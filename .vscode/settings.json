@@ -1,4 +1,5 @@
 {
     "python.pythonPath": "/home/joshua/anaconda3/envs/tfrobot/bin/python",
-    "python.linting.pylintEnabled": false
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": false
 }

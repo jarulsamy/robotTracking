@@ -17,14 +17,9 @@ from PIL import ImageGrab
 
 
 CWD_PATH = os.getcwd()
-<<<<<<< HEAD
 MODEL_NAME = 'scribbler_graph_qr_v4/'
 PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
-=======
-FOLDER_NAME = 'scribbler_graph_qr_v2/'
-PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(FOLDER_NAME)
->>>>>>> 0d52250... Added args parse in WIP version
-PATH_TO_LABELS = "object-detection.pbtxt"
+
 
 NUM_CLASSES = 2
 
