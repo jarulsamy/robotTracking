@@ -15,6 +15,7 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
 import urllib.request
+from pyzbar.pyzbar import decode
 
 config = tf.ConfigProto()
 config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
@@ -26,7 +27,7 @@ os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
 CWD_PATH = os.getcwd()
 
-MODEL_NAME = 'scribbler_graph'
+MODEL_NAME = 'scribbler_graph_qr_v3'
 # MODEL_NAME = ''
 PATH_TO_CKPT = os.path.join(CWD_PATH, 'object_detection', MODEL_NAME, 'frozen_inference_graph.pb')
 # PATH_TO_LABELS = os.path.join(CWD_PATH, 'object_detection', 'data', 'object-detection.pbtxt')
@@ -107,7 +108,7 @@ if __name__ == '__main__':
     pool = Pool(args.num_workers, worker, (input_q, output_q))
 
     URL = "http://10.0.0.101:8000/stream.mjpg"
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(URL)
 
     while True:
         startTime = time.time()
