@@ -1,2 +1,2 @@
-.vscode/*
-tensorflow/object_detection/__pycache__/*
+*.pyc
+#tensorflow/object_detection/__pycache__
