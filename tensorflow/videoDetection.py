@@ -19,7 +19,9 @@ from PIL import ImageGrab
 CWD_PATH = os.getcwd()
 MODEL_NAME = 'scribbler_graph_qr_v4/'
 PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
+PATH_TO_LABELS = 'object-detection.pbtxt'
 
+pt = []
 
 NUM_CLASSES = 2
 
@@ -60,6 +62,12 @@ imgThread = imageThread(1, 'image', URL)
 imgThread.daemon = True
 imgThread.start()
 
+def click(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        global pt
+        pt = [x, y]
+    return pt
+
 ### PERFORAMCNE TUNING CPU ONLY###
 # config = tf.ConfigProto()
 # config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
@@ -70,7 +78,7 @@ imgThread.start()
 # os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
 with detection_graph.as_default():
-    with tf.Session(graph=detection_graph, config=config) as sess:
+    with tf.Session(graph=detection_graph) as sess:
         while True:
             startTime = time.time()
             image_np = imgThread.getFrame() # Grab image
@@ -139,15 +147,8 @@ with detection_graph.as_default():
             if pt == []:
                 cv2.imshow('Detection', image_np)
             else:
-                cv2.circle(image_np, (pt[0], pt[1]), 5,  (0, 255, 0), -1)
-                angleChassis = angle_clockwise(tuple(pt), (xCenterChassis, yCenterChassis))
-                print(angleChassis)
-                cv2.line(image_np, tuple(pt), (xCenterChassis, yCenterChassis), (0, 0, 255), thickness=3)
-                cv2.line(image_np, tuple(pt), (xCenterQr, yCenterQr), (255, 0, 0), thickness=3)
-                
-                
+                cv2.circle(image_np, (pt[0], pt[1]), 5,  (0, 255, 0), -1)         
                 cv2.imshow("Detection", image_np)
-                
 
             cv2.namedWindow("Detection")
             cv2.setMouseCallback("Detection", click)
