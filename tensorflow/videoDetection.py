@@ -13,11 +13,11 @@ import cv2
 import threading
 import time
 
-from PIL import ImageGrab
-
+import platform
 
 CWD_PATH = os.getcwd()
-MODEL_NAME = 'scribbler_graph_qr_v4/'
+# MODEL_NAME = "scribbler_graph_board/"
+MODEL_NAME = 'graph_57k/'
 PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
 PATH_TO_LABELS = 'object-detection.pbtxt'
 
@@ -32,7 +32,8 @@ class imageThread(threading.Thread):
         self.threadID = threadID
         self.name = name
         self.url = URL
-        self.cap = cv2.VideoCapture(URL)
+        # self.cap = cv2.VideoCapture(URL)
+        self.cap = cv2.VideoCapture("stream.avi")
         # self.cap = cv2.VideoCapture(0)
 
     def getFrame(self):
@@ -56,7 +57,8 @@ category_index = label_map_util.create_category_index(categories)
 
 IMAGE_SIZE = (12, 8)
 
-URL = "http://10.0.0.101:8000/stream.mjpg"
+# URL = "http://10.0.0.101:8000/stream.mjpg"
+URL = "stream.avi"
 # Setup thread to grab / convert color spaces of images
 imgThread = imageThread(1, 'image', URL)
 imgThread.daemon = True
@@ -69,16 +71,25 @@ def click(event, x, y, flags, param):
     return pt
 
 ### PERFORAMCNE TUNING CPU ONLY###
-# config = tf.ConfigProto()
-# config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP
-# config.inter_op_parallelism_threads = 4
-# os.environ["OMP_NUM_THREADS"] = "4"
-# os.environ["KMP_BLOCKTIME"] = "4"
-# os.environ["KMP_SETTINGS"] = "1"
-# os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
+
+# Auto detect platform and use Intel MKL if necessary
+if "Intel64" in platform.processor():
+    print("Intel CPU Detected...")
+    print("Attempting to configure Intel MKL DNN...")
+    config = tf.ConfigProto()
+    config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP_NUM_THREADS
+    config.inter_op_parallelism_threads = 4
+    os.environ["OMP_NUM_THREADS"] = "4"
+    os.environ["KMP_BLOCKTIME"] = "4"
+    os.environ["KMP_SETTINGS"] = "1"
+    os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
+    print("Successfully loaded Intel MKL Settings")
+
+else:
+    config = tf.ConfigProto()
 
 with detection_graph.as_default():
-    with tf.Session(graph=detection_graph) as sess:
+    with tf.Session(graph=detection_graph, config=config) as sess:
         while True:
             startTime = time.time()
             image_np = imgThread.getFrame() # Grab image
@@ -108,7 +119,7 @@ with detection_graph.as_default():
               np.squeeze(scores),
               category_index,
               use_normalized_coordinates=True,
-              min_score_thresh=.5,
+              min_score_thresh=.3,
               line_thickness=5)
 
             # Chassis Centroid
