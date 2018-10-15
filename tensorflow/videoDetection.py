@@ -32,8 +32,8 @@ class imageThread(threading.Thread):
         self.threadID = threadID
         self.name = name
         self.url = URL
-        # self.cap = cv2.VideoCapture(URL)
-        self.cap = cv2.VideoCapture("stream.avi")
+        self.cap = cv2.VideoCapture(URL)
+        # self.cap = cv2.VideoCapture("stream.avi")
         # self.cap = cv2.VideoCapture(0)
 
     def getFrame(self):
@@ -57,8 +57,8 @@ category_index = label_map_util.create_category_index(categories)
 
 IMAGE_SIZE = (12, 8)
 
-# URL = "http://10.0.0.101:8000/stream.mjpg"
-URL = "stream.avi"
+URL = "http://10.0.0.101:8000/stream.mjpg"
+# URL = "stream.avi"
 # Setup thread to grab / convert color spaces of images
 imgThread = imageThread(1, 'image', URL)
 imgThread.daemon = True
@@ -74,14 +74,15 @@ def click(event, x, y, flags, param):
 
 # Auto detect platform and use Intel MKL if necessary
 if "Intel64" in platform.processor():
+    threads = 4
     print("Intel CPU Detected...")
     print("Attempting to configure Intel MKL DNN...")
     config = tf.ConfigProto()
-    config.intra_op_parallelism_threads = 4 # SHOULD ALWAYS BE SAME AS OMP_NUM_THREADS
-    config.inter_op_parallelism_threads = 4
-    os.environ["OMP_NUM_THREADS"] = "4"
-    os.environ["KMP_BLOCKTIME"] = "4"
-    os.environ["KMP_SETTINGS"] = "1"
+    config.intra_op_parallelism_threads = threads # SHOULD ALWAYS BE SAME AS OMP_NUM_THREADS
+    config.inter_op_parallelism_threads = threads
+    os.environ["OMP_NUM_THREADS"] = str(threads)
+    os.environ["KMP_BLOCKTIME"] = str(threads)
+    os.environ["KMP_SETTINGS"] = "0"
     os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
     print("Successfully loaded Intel MKL Settings")
 
