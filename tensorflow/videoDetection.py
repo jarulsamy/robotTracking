@@ -39,7 +39,21 @@ class imageThread(threading.Thread):
     def getFrame(self):
         ret, frame = self.cap.read()
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        # frame = self.grayscaleify(frame)
         return frame
+
+    def grayscaleify(self, image):
+        # The function supports only grayscale images
+        assert len(image.shape) == 2, "Not a grayscale input image" 
+        last_axis = -1
+        dim_to_repeat = 2
+        repeats = 3
+        grscale_img_3dims = np.expand_dims(image, last_axis)
+        training_image = np.repeat(grscale_img_3dims, repeats, dim_to_repeat).astype('uint8')
+        assert len(training_image.shape) == 3
+        assert training_image.shape[-1] == 3
+        return training_image
 
 # Load Detection graph
 detection_graph = tf.Graph()
