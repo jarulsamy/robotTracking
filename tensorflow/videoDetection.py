@@ -86,13 +86,26 @@ def click(event, x, y, flags, param):
 
 ### PERFORAMCNE TUNING CPU ONLY###
 
-# Auto detect platform and use Intel MKL if necessary
-if "Intel64" in platform.processor():
+# Auto detect platform and configure core counts if necessary
+if "Intel64" in platform.processor(): 
     threads = 4
     print("Intel CPU Detected...")
     print("Attempting to configure Intel MKL DNN...")
     config = tf.ConfigProto()
     config.intra_op_parallelism_threads = threads # SHOULD ALWAYS BE SAME AS OMP_NUM_THREADS
+    config.inter_op_parallelism_threads = threads
+    os.environ["OMP_NUM_THREADS"] = str(threads)
+    os.environ["KMP_BLOCKTIME"] = str(threads)
+    os.environ["KMP_SETTINGS"] = "0"
+    os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
+    print("Successfully loaded Intel MKL Settings")
+
+elif "AMD" in platform.processor():
+    threads = 12
+    print("AMD CPU Detected...")
+    print("Attempting to configure MKL DNN Library...")
+    config = tf.ConfigProto()
+    config.intra_op_parallelism_threads = threads
     config.inter_op_parallelism_threads = threads
     os.environ["OMP_NUM_THREADS"] = str(threads)
     os.environ["KMP_BLOCKTIME"] = str(threads)
