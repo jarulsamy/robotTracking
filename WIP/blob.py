@@ -7,7 +7,7 @@ cap = cv2.VideoCapture(URL)
 
 while True:
     ret, frame = cap.read()
-    
+
     im = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # cv2.imshow("gray", im)
     # im = cv2.imread("blob.jpg", cv2.IMREAD_GRAYSCALE)

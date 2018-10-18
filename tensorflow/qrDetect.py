@@ -11,6 +11,6 @@ while True:
         poly = (obj.polygon)
         cv2.rectangle(frame, poly[0], poly[2], (255, 0, 0), 3)
     cv2.imshow("img", frame)
-    
+
     if cv2.waitKey(1) == 27:
         exit(0)
