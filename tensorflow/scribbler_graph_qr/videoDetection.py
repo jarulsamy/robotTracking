@@ -1,10 +1,10 @@
 import numpy as np
 import os
-import sys
+#import sys
 import tensorflow as tf
 
-from collections import defaultdict
-from io import StringIO
+#from collections import defaultdict
+#from io import StringIO
 
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
