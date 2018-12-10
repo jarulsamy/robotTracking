@@ -71,8 +71,8 @@ category_index = label_map_util.create_category_index(categories)
 
 IMAGE_SIZE = (12, 8)
 
-URL = "http://10.0.0.101:8000/stream.mjpg"
-# URL = "stream.avi"
+# URL = "http://10.0.0.101:8000/stream.mjpg"
+URL = "stream.avi"
 # Setup thread to grab / convert color spaces of images
 imgThread = imageThread(1, 'image', URL)
 imgThread.daemon = True
