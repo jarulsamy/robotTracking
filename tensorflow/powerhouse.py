@@ -1,3 +1,4 @@
+import tensorflow as tf
 import numpy as np
 import os
 import sys
@@ -16,14 +17,15 @@ import time
 import platform
 
 CWD_PATH = os.getcwd()
-# MODEL_NAME = "scribbler_graph_board/"
-MODEL_NAME = 'graph_57k/'
+MODEL_NAME = 'scribbler_graph_board_v3/'
 PATH_TO_CKPT = '{}frozen_inference_graph.pb'.format(MODEL_NAME)
+# PATH_TO_CKPT = '{}opt_graph.pb'.format(MODEL_NAME)
 PATH_TO_LABELS = 'object-detection.pbtxt'
 
 pt = []
 
 NUM_CLASSES = 2
+
 
 class imageThread(threading.Thread):
 
@@ -45,15 +47,17 @@ class imageThread(threading.Thread):
 
     def grayscaleify(self, image):
         # The function supports only grayscale images
-        assert len(image.shape) == 2, "Not a grayscale input image" 
+        assert len(image.shape) == 2, "Not a grayscale input image"
         last_axis = -1
         dim_to_repeat = 2
         repeats = 3
         grscale_img_3dims = np.expand_dims(image, last_axis)
-        training_image = np.repeat(grscale_img_3dims, repeats, dim_to_repeat).astype('uint8')
+        training_image = np.repeat(
+            grscale_img_3dims, repeats, dim_to_repeat).astype('uint8')
         assert len(training_image.shape) == 3
         assert training_image.shape[-1] == 3
         return training_image
+
 
 # Load Detection graph
 detection_graph = tf.Graph()
@@ -66,7 +70,8 @@ with detection_graph.as_default():
 
 # Load label map
 label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
-categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
+categories = label_map_util.convert_label_map_to_categories(
+    label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
 category_index = label_map_util.create_category_index(categories)
 
 IMAGE_SIZE = (12, 8)
@@ -78,6 +83,7 @@ imgThread = imageThread(1, 'image', URL)
 imgThread.daemon = True
 imgThread.start()
 
+
 def click(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         global pt
@@ -86,13 +92,15 @@ def click(event, x, y, flags, param):
 
 ### PERFORAMCNE TUNING CPU ONLY###
 
+
 # Auto detect platform and configure core counts if necessary
-# if "Intel64" in platform.processor(): 
+# if "Intel64" in platform.processor():
 threads = 4
 print("Intel CPU Detected...")
 print("Attempting to configure Intel MKL DNN...")
 config = tf.ConfigProto()
-config.intra_op_parallelism_threads = threads # SHOULD ALWAYS BE SAME AS OMP_NUM_THREADS
+# SHOULD ALWAYS BE SAME AS OMP_NUM_THREADS
+config.intra_op_parallelism_threads = threads
 config.inter_op_parallelism_threads = threads
 os.environ["OMP_NUM_THREADS"] = str(threads)
 os.environ["KMP_BLOCKTIME"] = str(threads)
@@ -115,12 +123,13 @@ print("Successfully loaded Intel MKL Settings")
 
 # else:
 config = tf.ConfigProto()
+cluster = tf.train.ClusterSpec({"local": ["10.0.0.3:2222", "10.0.0.3:2223"]})
 
 with detection_graph.as_default():
-    with tf.Session(graph=detection_graph, config=config) as sess:
+    with tf.Session("grpc://10.0.0.3:2222", graph=detection_graph) as sess:
         while True:
             startTime = time.time()
-            image_np = imgThread.getFrame() # Grab image
+            image_np = imgThread.getFrame()  # Grab image
 
             image_np_expanded = np.expand_dims(image_np, axis=0)
             image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
@@ -128,11 +137,12 @@ with detection_graph.as_default():
             boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
             scores = detection_graph.get_tensor_by_name('detection_scores:0')
             classes = detection_graph.get_tensor_by_name('detection_classes:0')
-            num_detections = detection_graph.get_tensor_by_name('num_detections:0')
+            num_detections = detection_graph.get_tensor_by_name(
+                'num_detections:0')
 
             (boxes, scores, classes, num_detections) = sess.run(
-              [boxes, scores, classes, num_detections],
-              feed_dict={image_tensor: image_np_expanded})
+                [boxes, scores, classes, num_detections],
+                feed_dict={image_tensor: image_np_expanded})
 
             height, width, channels = image_np.shape
 
@@ -141,14 +151,14 @@ with detection_graph.as_default():
             scores = np.squeeze(scores)
 
             vis_util.visualize_boxes_and_labels_on_image_array(
-              image_np,
-              np.squeeze(boxes),
-              np.squeeze(classes).astype(np.int32),
-              np.squeeze(scores),
-              category_index,
-              use_normalized_coordinates=True,
-              min_score_thresh=.3,
-              line_thickness=5)
+                image_np,
+                np.squeeze(boxes),
+                np.squeeze(classes).astype(np.int32),
+                np.squeeze(scores),
+                category_index,
+                use_normalized_coordinates=True,
+                min_score_thresh=.3,
+                line_thickness=5)
 
             # Chassis Centroid
             if scores[0] > .5:
@@ -164,7 +174,8 @@ with detection_graph.as_default():
                 xCenterChassis = int(xCenter)
                 yCenterChassis = int(yCenter)
 
-                cv2.circle(image_np, (xCenterChassis, yCenterChassis), 10,  (255, 0, 0), -1)
+                cv2.circle(image_np, (xCenterChassis, yCenterChassis),
+                           10,  (255, 0, 0), -1)
 
             # QR Code Centroid
             if scores[1] > .5:
@@ -180,13 +191,14 @@ with detection_graph.as_default():
                 xCenterQr = int(xCenter)
                 yCenterQr = int(yCenter)
 
-                cv2.circle(image_np, (xCenterQr, yCenterQr), 10,  (0, 0, 255), -1)
+                cv2.circle(image_np, (xCenterQr, yCenterQr),
+                           10,  (0, 0, 255), -1)
 
             image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
             if pt == []:
                 cv2.imshow('Detection', image_np)
             else:
-                cv2.circle(image_np, (pt[0], pt[1]), 5,  (0, 255, 0), -1)         
+                cv2.circle(image_np, (pt[0], pt[1]), 5,  (0, 255, 0), -1)
                 cv2.imshow("Detection", image_np)
 
             cv2.namedWindow("Detection")
@@ -195,3 +207,18 @@ with detection_graph.as_default():
             print("Processing Time: {}".format(elapsedTime))
             if cv2.waitKey(1) == 27:
                 exit(0)
+
+
+# cluster = tf.train.ClusterSpec({"local": ["10.0.0.3:2222", "10.0.0.3:2223"]})
+
+# x = tf.constant(2)
+
+
+
+# with tf.Session("grpc://10.0.0.3:2222") as sess:
+#     y2 = x - 66
+
+#     y1 = x + 300
+#     y = y1 + y2
+#     result = sess.run(y)
+#     print(result)
