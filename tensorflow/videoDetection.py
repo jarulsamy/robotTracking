@@ -39,21 +39,9 @@ class imageThread(threading.Thread):
     def getFrame(self):
         ret, frame = self.cap.read()
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-        # frame = self.grayscaleify(frame)
+        fps = self.cap.get(cv2.CAP_PROP_FPS)
+        # print "Frames per second using: {0}".format(fps)
         return frame
-
-    def grayscaleify(self, image):
-        # The function supports only grayscale images
-        assert len(image.shape) == 2, "Not a grayscale input image" 
-        last_axis = -1
-        dim_to_repeat = 2
-        repeats = 3
-        grscale_img_3dims = np.expand_dims(image, last_axis)
-        training_image = np.repeat(grscale_img_3dims, repeats, dim_to_repeat).astype('uint8')
-        assert len(training_image.shape) == 3
-        assert training_image.shape[-1] == 3
-        return training_image
 
 # Load Detection graph
 detection_graph = tf.Graph()
@@ -73,6 +61,7 @@ IMAGE_SIZE = (12, 8)
 
 URL = "http://10.0.0.101:8000/stream.mjpg"
 # URL = "stream.avi"
+
 # Setup thread to grab / convert color spaces of images
 imgThread = imageThread(1, 'image', URL)
 imgThread.daemon = True
@@ -86,8 +75,6 @@ def click(event, x, y, flags, param):
 
 ### PERFORAMCNE TUNING CPU ONLY###
 
-# Auto detect platform and configure core counts if necessary
-# if "Intel64" in platform.processor(): 
 threads = 4
 print("Intel CPU Detected...")
 print("Attempting to configure Intel MKL DNN...")
@@ -100,20 +87,6 @@ os.environ["KMP_SETTINGS"] = "0"
 os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 print("Successfully loaded Intel MKL Settings")
 
-# elif "AMD" in platform.processor():
-#     threads = 12
-#     print("AMD CPU Detected...")
-#     print("Attempting to configure MKL DNN Library...")
-#     config = tf.ConfigProto()
-#     config.intra_op_parallelism_threads = threads
-#     config.inter_op_parallelism_threads = threads
-#     os.environ["OMP_NUM_THREADS"] = str(threads)
-#     os.environ["KMP_BLOCKTIME"] = str(threads)
-#     os.environ["KMP_SETTINGS"] = "0"
-#     os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
-#     print("Successfully loaded Intel MKL Settings")
-
-# else:
 config = tf.ConfigProto()
 
 with detection_graph.as_default():
@@ -151,36 +124,24 @@ with detection_graph.as_default():
               line_thickness=5)
 
             # Chassis Centroid
-            if scores[0] > .5:
-                box = tuple(boxes[0].tolist())
-                yMin = box[0] * height
-                xMin = box[1] * width
-                yMax = box[2] * height
-                xMax = box[3] * width
 
-                xCenter = (xMax + xMin) / 2
-                yCenter = (yMax + yMin) / 2
+            for i in range(len(scores)):
+                if scores[i] > .5:
+                    box = tuple(boxes[i].tolist())
+                    yMin = box[0] * height
+                    xMin = box[1] * width
+                    yMax = box[2] * height
+                    xMax = box[3] * width
 
-                xCenterChassis = int(xCenter)
-                yCenterChassis = int(yCenter)
+                    xCenter = (xMax + xMin) / 2
+                    yCenter = (yMax + yMin) / 2
 
-                cv2.circle(image_np, (xCenterChassis, yCenterChassis), 10,  (255, 0, 0), -1)
-
-            # QR Code Centroid
-            if scores[1] > .5:
-                box = tuple(boxes[1].tolist())
-                yMin = box[0] * height
-                xMin = box[1] * width
-                yMax = box[2] * height
-                xMax = box[3] * width
-
-                xCenter = (xMax + xMin) / 2
-                yCenter = (yMax + yMin) / 2
-
-                xCenterQr = int(xCenter)
-                yCenterQr = int(yCenter)
-
-                cv2.circle(image_np, (xCenterQr, yCenterQr), 10,  (0, 0, 255), -1)
+                    xCenterChassis = int(xCenter)
+                    yCenterChassis = int(yCenter)
+                    if i == 0:
+                        cv2.circle(image_np, (xCenterChassis, yCenterChassis), 10,  (255, 0, 0), -1)
+                    else:
+                        cv2.circle(image_np, (xCenterChassis, yCenterChassis), 10, (0, 0, 255), -1)
 
             image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
             if pt == []:
@@ -192,6 +153,6 @@ with detection_graph.as_default():
             cv2.namedWindow("Detection")
             cv2.setMouseCallback("Detection", click)
             elapsedTime = time.time() - startTime
-            print("Processing Time: {}".format(elapsedTime))
+            # print("Processing Time: {}".format(elapsedTime))
             if cv2.waitKey(1) == 27:
                 exit(0)
