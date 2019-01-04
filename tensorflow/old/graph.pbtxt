@@ -2233,7 +2233,7 @@ node {
   attr {
     key: "num_classes"
     value {
-      i: 2
+      i: 91
     }
   }
   attr {
