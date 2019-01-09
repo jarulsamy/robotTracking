@@ -17,7 +17,7 @@ import platform
 
 from myro import *
 
-init("/dev/ttyS4")
+init("/dev/ttyS3")
 
 CWD_PATH = os.getcwd()
 MODEL_NAME = 'scribbler_graph_board_v3/'
@@ -152,7 +152,8 @@ class movementThread(threading.Thread):
                 self.move()
 
                 if pt != []:
-                    if self.chassisDistPoint < 50:  # If statement to kill program after reaching a certain proximety to the point
+                    # If statement to kill program after reaching a certain proximety to the point
+                    if self.chassisDistPoint < 50:  
                         stop()
                         exit(0)
 # Load Detection graph
@@ -202,7 +203,7 @@ print("Successfully loaded Intel MKL Settings")
 config = tf.ConfigProto()
 
 moveThread = movementThread(1, "Movement")
-moveThread.daemon = True
+# moveThread.daemon = True
 moveThread.start()
 
 with detection_graph.as_default():
@@ -229,7 +230,7 @@ with detection_graph.as_default():
             classes = np.squeeze(classes)
             scores = np.squeeze(scores)
 
-            vis_util.visualize_boxes_and_labels_on_image_array(
+            map = vis_util.visualize_boxes_and_labels_on_image_array(
               image_np,
               np.squeeze(boxes),
               np.squeeze(classes).astype(np.int32),
@@ -239,44 +240,40 @@ with detection_graph.as_default():
               min_score_thresh=.3,
               line_thickness=5)
 
-            # Chassis Centroid
-            new_scores = []
-            for i in range(len(scores)):
-                if scores[i] > .5:
-                    new_scores.append(scores[i])
+            # print(np.squeeze(boxes))
 
-            if new_scores[0] > .5:
-                box = tuple(boxes[0].tolist())
-                yMin = box[0] * height
-                xMin = box[1] * width
-                yMax = box[2] * height
-                xMax = box[3] * width
+            # print(map[list])
+            try:
+                for box in map:
+                    if map[box][0][:7] == "chassis":
+                        yMin = box[0] * height
+                        xMin = box[1] * width
+                        yMax = box[2] * height
+                        xMax = box[3] * width
 
-                xCenter = (xMax + xMin) / 2
-                yCenter = (yMax + yMin) / 2
+                        xCenter = (xMax + xMin) / 2
+                        yCenter = (yMax + yMin) / 2
 
-                xCenterChassis = int(xCenter)
-                yCenterChassis = int(yCenter)
+                        xCenterChassis = int(xCenter)
+                        yCenterChassis = int(yCenter)
 
-                cv2.circle(image_np, (xCenterChassis, yCenterChassis), 10,  (255, 0, 0), -1)
+                        cv2.circle(image_np, (xCenterChassis, yCenterChassis), 10,  (255, 0, 0), -1)
+                    elif map[box][0][:5] == "board":
+                        yMin = box[0] * height
+                        xMin = box[1] * width
+                        yMax = box[2] * height
+                        xMax = box[3] * width
+
+                        xCenter = (xMax + xMin) / 2
+                        yCenter = (yMax + yMin) / 2
+
+                        xCenterBoard = int(xCenter)
+                        yCenterBoard = int(yCenter)
+
+                        cv2.circle(image_np, (xCenterBoard, yCenterBoard), 10, (0, 0, 255), -1)
+            except:
+                pass            
             
-            # Board Calculations
-            if len(new_scores) > 1:
-                if new_scores[1] > .5:
-                    box = tuple(boxes[1].tolist())
-                    yMin = box[0] * height
-                    xMin = box[1] * width
-                    yMax = box[2] * height
-                    xMax = box[3] * width
-
-                    xCenter = (xMax + xMin) / 2
-                    yCenter = (yMax + yMin) / 2
-
-                    xCenterBoard = int(xCenter)
-                    yCenterBoard = int(yCenter)
-
-                    cv2.circle(image_np, (xCenterBoard, yCenterBoard), 10, (0, 0, 255), -1)
-
             try:
                 global centroidChassis, centroidBoard
                 centroidChassis = [xCenterChassis, yCenterChassis]
