@@ -3,21 +3,35 @@ import threading
 import numpy as np
 
 
-class ImageThread(threading.Thread):
-    def __init__(self, threadID, URL):
-        threading.Thread.__init__(self)
-        self.id = threadID
+class ImageThread:
+    def __init__(self, URL):
+        # threading.Thread.__init__(self)
         self.URL = URL
         self.cap = cv2.VideoCapture(URL)
+        self.frame = self.cap.read()
+        self.frame = self.frame[1]
+        self.stopped = False
 
-    def get_frame(self):
-        ret, frame = self.cap.read()
-        return frame
+    def start(self):
+        threading.Thread(target=self.update, args=()).start()
+        print("START")
+        return self
+
+    def update(self):
+        while not self.stopped:
+            self.frame = self.cap.read()
+            self.frame = self.frame[1]
+
+    def read(self):
+        return self.frame
+
+    def stop(self):
+        self.stopped = True
 
 
 def calibrate(frame):
     # cv2.imshow("Calibration", frame)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2Luv)
     r = cv2.selectROI("ROI", frame)
     cv2.destroyWindow("ROI")
     imCrop = frame[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])]
@@ -38,13 +52,13 @@ def calibrate(frame):
     return dominant
 
 
-def mask(img, color, thresh_delta=50):
+def mask(img, color, thresh_delta=10):
     kernel = np.ones((5, 5), np.uint8)
 
-    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    cnv_img = cv2.cvtColor(img, cv2.COLOR_BGR2Luv)
     lower = color - thresh_delta
     upper = color + thresh_delta
-    masked_img = cv2.inRange(hsv_img, lower, upper)
+    masked_img = cv2.inRange(cnv_img, lower, upper)
     masked_img = cv2.dilate(masked_img, kernel, iterations=5)
     edges = cv2.Canny(masked_img, 75, 200)
 
