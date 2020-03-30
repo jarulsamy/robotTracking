@@ -1,5 +1,6 @@
-import cv2
 import threading
+
+import cv2
 import numpy as np
 
 
@@ -34,18 +35,17 @@ def calibrate(frame):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2Luv)
     r = cv2.selectROI("ROI", frame)
     cv2.destroyWindow("ROI")
-    imCrop = frame[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])]
+    imCrop = frame[int(r[1]) : int(r[1] + r[3]), int(r[0]) : int(r[0] + r[2])]
 
     # Use k-means clustering to create a palette
     # with the most representative colors in the region
     pixels = np.float32(imCrop.reshape(-1, 3))
     n_colors = 5
 
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, .1)
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, 0.1)
     flags = cv2.KMEANS_RANDOM_CENTERS
 
-    _, labels, palette = cv2.kmeans(
-        pixels, n_colors, None, criteria, 10, flags)
+    _, labels, palette = cv2.kmeans(pixels, n_colors, None, criteria, 10, flags)
     _, counts = np.unique(labels, return_counts=True)
 
     dominant = palette[np.argmax(counts)]
@@ -64,7 +64,8 @@ def mask(img, color, thresh_delta=10):
 
     # find contours in the thresholded image
     contours, hierarchy = cv2.findContours(
-        edges.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        edges.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
+    )
 
     if len(contours):
         c = [cv2.convexHull(cnt) for cnt in contours]
