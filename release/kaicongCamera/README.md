@@ -1,4 +1,4 @@
-## Kaicong Camera Running With Robot  
+## Kaicong Camera Running With Robot
 
 **Table of Contents**
 
@@ -22,7 +22,7 @@ Clone Repo (No official release built yet)
 - Numpy
 - Pywin32
 - PySerial V2.2 (Anything newer is not compatible with myro, should be included in myro download)
-- Myro v2.99 or v2.95: [Install Instructions](https://github.com/JoshuaA9088/robotTracking/blob/master/myro_install.md) 
+- Myro v2.99 or v2.95: [Install Instructions](https://github.com/JoshuaA9088/robotTracking/blob/master/myro_install.md)
 
 ## Changing Camera Properties
 **TODO**
