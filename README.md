@@ -1,19 +1,65 @@
 ## Robot Tracking
 
-Using OpenCV2 and Numpy to track a scribbler 2 robot. Specifically been used and tested with the Kaicong SIP 1602 Camera and the Raspberry Pi Camera.
+Using OpenCV2 and Numpy to track a Scribbler 2 robot. A raspberry pi with a camera is used to locate and track the robot.
 The ultimate objective of this script is to be able to click somewhere within a window and have the robot move to that location based on alternate color space tracking.
 
+## Getting Started
 
-**Table of Contents**
-- [Kaicong Camera](https://github.com/Joshuaa9088/robotTracking/tree/master/release/kaicongCamera/)
-- [Raspberry Pi Camera](https://github.com/JoshuaA9088/robotTracking/tree/master/release/piCamera/)
-- [Authors](#authors)
-- [Acknowledgments](#acknowledgments)
+Clone Repo (No official release built yet)
 
-## Authors
+## Prerequisites
 
-* **Joshua Arulsamy**
+-   Raspberry Pi and Camera
+-   Python 3.6+
+-   OpenCV
+-   Numpy
+-   PySerial
+-   Myro v3.0.0+ [Install Instructions](https://github.com/jarulsamy/robotTracking/blob/master/myro_install.md)
 
-## Acknowledgments
+## Raspberry Pi Setup
 
-* **Roby Velez**
+-   Ensure that the Raspberry Pi is completely up to date with:
+        sudo apt-get update
+        sudo apt-get upgrade
+
+-   Run ` sudo raspi-config` and enable the camera
+
+-   Python3 should be preinstalled with Raspbian, otherwise install it:
+
+        sudo apt install python3
+
+-   Install the rest of the dependencies
+
+        pip3 install picamera socketserver http
+
+-   This script must be running on the raspberry pi at all times to connect to the camera:  [Download](https://gist.github.com/jarulsamy/a47b948ce61361230d387555eec84b57/archive/daa53c14bc95cb01e9cac1056fcfeab9c13dbf49.zip)
+
+## Changing Camera Properties
+
+**TODO**
+
+## Usage
+
+**TODO** (Include more information about multithreading implementation, and calibration/orientation keybinds.)
+
+## Result
+
+  This should open 3 Windows showing the alternate chassis, board, and original images.
+
+  **Robot Picked**
+  <img src="https://user-images.githubusercontent.com/14321139/34995801-d096836a-fa94-11e7-9c0d-7db769829056.PNG" alt="Robot Picked" width="320" height="240">
+
+  **Front Picked**
+  <img src="https://user-images.githubusercontent.com/14321139/34995798-cff908e2-fa94-11e7-96e2-6e31c177178c.PNG" alt="Front Picked" width="320" height="240">
+
+  **Centroids**
+  <img src="https://user-images.githubusercontent.com/14321139/34995799-d02e19f6-fa94-11e7-850f-02060456b2b1.PNG" alt="Centroids" width="320" height="240">
+
+## Support
+
+Reach out to me at one of the following places!
+
+-   Email (Best) at joshua.gf.arul@gmail.com
+-   Twitter at <a href="http://twitter.com/jarulsamy_" target="_blank">`@jarulsamy_`</a>
+
+* * *
