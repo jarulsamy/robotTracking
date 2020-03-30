@@ -1,10 +1,11 @@
 import time
 
 import cv2
-from tracker import orient
+
 from tracker import calibrate
 from tracker import ImageThread
 from tracker import mask
+from tracker import orient
 
 # For now, only CV2 color-based detection is supported and working properly.
 
