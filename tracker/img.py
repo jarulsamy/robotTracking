@@ -1,5 +1,4 @@
 import threading
-
 import cv2
 import numpy as np
 
@@ -35,7 +34,7 @@ def calibrate(frame):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2Luv)
     r = cv2.selectROI("ROI", frame)
     cv2.destroyWindow("ROI")
-    imCrop = frame[int(r[1]) : int(r[1] + r[3]), int(r[0]) : int(r[0] + r[2])]
+    imCrop = frame[int(r[1]): int(r[1] + r[3]), int(r[0]): int(r[0] + r[2])]
 
     # Use k-means clustering to create a palette
     # with the most representative colors in the region
@@ -56,8 +55,10 @@ def mask(img, color, thresh_delta=10):
     kernel = np.ones((5, 5), np.uint8)
 
     cnv_img = cv2.cvtColor(img, cv2.COLOR_BGR2Luv)
+
     lower = color - thresh_delta
     upper = color + thresh_delta
+
     masked_img = cv2.inRange(cnv_img, lower, upper)
     masked_img = cv2.dilate(masked_img, kernel, iterations=5)
     edges = cv2.Canny(masked_img, 75, 200)

@@ -2,7 +2,7 @@ import time
 
 import cv2
 import myro
-from img import mask
+from .img import mask
 
 
 def orient(image_thread, window_name, calibration, comPort):
