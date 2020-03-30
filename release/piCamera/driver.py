@@ -1,72 +1,45 @@
 import myro
 from img import mask
-import numpy as np
-import threading
-from collections import deque
+import cv2
+import time
 
 
-class DriverThread():
-    def __init__(self, image_thread, calibration, comPort="COM5", buffer=20):
-        # threading.Thread.__init__(self)
-        self.image_thread = image_thread
-        self.calibration = calibration
-        self.buffer = buffer
-        self.pts = deque(maxlen=self.buffer)
-        self.stopped = False
+def orient(image_thread, window_name, calibration, comPort):
+    debug = False
+    done = False
+    myro.init(comPort)
+    while not done:
+        frame = image_thread.read()
+        frame, (cX, cY) = mask(frame, calibration)
+        cv2.imshow(window_name, frame)
 
-        myro.init(comPort)
+        myro.forward(1, 0.5)
+        time.sleep(0.1)
 
-    def start(self):
-        threading.Thread(target=self.update, args=()).start()
-        return self
+        frame = image_thread.read()
+        frame, (cX2, cY2) = mask(frame, calibration)
 
-    def update(self):
-        while True:
-            frame = self.image_thread.read()
-            self.frame, (cX, cY) = mask(frame, self.calibration)
-            self.center = (cX, cY)
-            self.orient()
+        cv2.imshow(window_name, frame)
+        key_press = cv2.waitKey(1)
 
-    def get_frame(self):
-        return self.frame
+        if key_press == 27 or key_press == ord("q"):
+            myro.stop()
+            return -1
 
-    def reset(self):
-        self.pts = deque(maxlen=self.buffer)
+        dX = cX2 - cX
+        dY = cY2 - cY
 
-    def quit(self):
-        myro.stop()
+        if abs(dX) < 5 and dY < 5:
+            if debug:
+                print("Calibrated", dX, dY)
 
-    def orient(self):
-        (dX, dY) = (0, 0)
-        direction = ""
+            frame, (cX, cY) = mask(frame, calibration)
+            done = True
+            return 0, (cX, cY - 50)
+        else:
+            myro.backward(1, 0.5)
+            time.sleep(0.1)
+            myro.turnBy(10, "deg")
 
-        self.pts.append(self.center)
-
-        for i in np.arange(1, len(self.pts)):
-            if self.pts[i - 1] is None or self.pts[i] is None:
-                continue
-            # check to see if enough points have been accumulated in
-            # the buffer
-            if len(self.pts) >= 10 and i == 1 and self.pts[-10] is not None:
-                # compute the difference between the x and y
-                # coordinates and re-initialize the direction
-                # text variables
-                dX = self.pts[-10][0] - self.pts[i][0]
-                dY = self.pts[-10][1] - self.pts[i][1]
-                (dirX, dirY) = ("", "")
-                # ensure there is significant movement in the
-                # x-direction
-                if np.abs(dX) > 20:
-                    dirX = "West" if np.sign(dX) == 1 else "East"
-                # ensure there is significant movement in the
-                # y-direction
-                if np.abs(dY) > 20:
-                    dirY = "South" if np.sign(dY) == 1 else "North"
-                # handle when both dqirections are non-empty
-                if dirX != "" and dirY != "":
-                    direction = "{}-{}".format(dirY, dirX)
-                # otherwise, only one direction is non-empty
-                else:
-                    direction = dirX if dirX != "" else dirY
-
-        print(direction, dX, dY)
+            if debug:
+                print(dX, dY)

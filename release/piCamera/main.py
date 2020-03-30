@@ -1,7 +1,7 @@
 from img import ImageThread
 from img import mask
 from img import calibrate
-from driver import DriverThread
+from driver import orient
 import time
 
 import cv2
@@ -14,17 +14,15 @@ if __name__ == "__main__":
     image_thread = ImageThread(URL).start()
     time.sleep(0.1)
 
-    driver_thread = None
     calibration = None
-    orient = False
+    front_coords = None
 
     while True:
         frame = image_thread.read()
-        if calibration is not None and driver_thread is None:
+        if calibration is not None:
             frame, (cX, cY) = mask(frame, calibration)
-        elif calibration is not None and driver_thread is not None:
-            frame = driver_thread.get_frame()
-
+        if front_coords is not None:
+            cv2.circle(frame, front_coords, 7, (0, 255, 0), -1)
         cv2.imshow("frame", frame)
 
         # Handle all keypress events
@@ -33,21 +31,20 @@ if __name__ == "__main__":
         # Quit on escape or q
         if key_press == 27 or key_press == ord("q"):
             image_thread.stop()
-            driver_thread.quit()
             exit(0)
-
         # Calibrate on n, if calibration exists, reset.
         elif key_press == ord("n"):
             if calibration is not None:
                 calibration = None
                 continue
             calibration = calibrate(frame)
-
+        # Orient
         elif key_press == ord("o"):
             if calibrate is None:
                 print("Calibrate first!")
             else:
-                driver_thread = DriverThread(
-                    image_thread, calibration).start()
-        # elif key_press == ord("r"):
-        #     driver_thread.reset()
+                ret, front_coords = orient(
+                    image_thread, "frame", calibration, "COM5")
+                if ret != 0:
+                    image_thread.stop()
+                    exit(0)

@@ -74,6 +74,9 @@ def mask(img, color, thresh_delta=10):
         M = cv2.moments(c)
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
-        cv2.circle(img, (cX, cY), 7, (0, 255, 0), -1)
+        cv2.circle(img, (cX, cY), 7, (0, 0, 255), -1)
+    else:
+        cX = 0
+        cY = 0
 
     return img, (cX, cY)
