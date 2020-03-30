@@ -6,8 +6,6 @@ from threading import Condition
 
 import picamera
 
-# this is a test
-
 PAGE = """\
 <html>
 <head>
