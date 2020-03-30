@@ -32,11 +32,11 @@ Clone Repo (No official release built yet)
 
         pip3 install picamera socketserver http
 
--   This script must be running on the raspberry pi at all times to connect to the camera:  [Download](https://gist.github.com/jarulsamy/a47b948ce61361230d387555eec84b57/archive/daa53c14bc95cb01e9cac1056fcfeab9c13dbf49.zip)
+-   [This](PyLivecam/livecam.py) script must be running on the raspberry pi at all times to connect to the camera.
 
 ## Changing Camera Properties
 
-**TODO**
+**TODO** (This still needs to be implemented in the livecam level.)
 
 ## Usage
 
@@ -44,7 +44,7 @@ Clone Repo (No official release built yet)
 
 ## Result
 
-  This should open 3 Windows showing the alternate chassis, board, and original images.
+<!-- These images are going to definietly change! -->
 
   **Robot Picked**
   <img src="https://user-images.githubusercontent.com/14321139/34995801-d096836a-fa94-11e7-9c0d-7db769829056.PNG" alt="Robot Picked" width="320" height="240">
