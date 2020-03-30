@@ -1,6 +1,7 @@
 from base.KaicongOutput import KaicongOutput
 import urllib2
 
+
 class KaicongMotor(KaicongOutput):
 
     # These are the original state commands to send to the Kaicong camera.
@@ -23,20 +24,17 @@ class KaicongMotor(KaicongOutput):
         "PTZ_VPATROL_STOP": 27,
         "PTZ_HPATROL": 28,
         "PTZ_HPATROL_STOP": 29,
-        "IO_ON": 94, # TODO: What does this do?
-        "IO_OFF": 95, # and this one?
+        "IO_ON": 94,  # TODO: What does this do?
+        "IO_OFF": 95,  # and this one?
     }
 
     # This table converts a vector-style direction to its command
     MOVELIST = {
         "00": "PTZ_STOP",
-
         "0+": "PTZ_UP",
         "0-": "PTZ_DOWN",
-
         "+0": "PTZ_RIGHT",
         "-0": "PTZ_LEFT",
-
         "++": "PTZ_RIGHT_UP",
         "+-": "PTZ_RIGHT_DOWN",
         "-+": "PTZ_LEFT_UP",
@@ -46,24 +44,18 @@ class KaicongMotor(KaicongOutput):
     URI = "http://{0}:81/decoder_control.cgi?loginuse={1}&loginpas={2}&command=%d&onestep=0"
 
     def __init__(self, domain, user="admin", pwd="123456"):
-        KaicongOutput.__init__(
-            self,
-            domain,
-            KaicongMotor.URI,
-            user,
-            pwd
-        )
+        KaicongOutput.__init__(self, domain, KaicongMotor.URI, user, pwd)
 
-        self.state = '00'
+        self.state = "00"
 
     @classmethod
     def to_symbol(self, v):
         if v > 0:
-            return '+'
+            return "+"
         if v < 0:
-            return '-'
+            return "-"
         else:
-            return '0'
+            return "0"
 
     def send_command(self, cmdstr):
         stream = urllib2.urlopen(self.uri % (KaicongMotor.CMDLIST[cmdstr]))
@@ -77,8 +69,6 @@ class KaicongMotor(KaicongOutput):
         if cmdstr != self.state:
             self.send_command(cmdstr)
         self.state = cmdstr
-
-
 
 
 if __name__ == "__main__":
@@ -98,13 +88,13 @@ if __name__ == "__main__":
         keys = pygame.key.get_pressed()
         x = 0
         y = 0
-        if keys [pygame.K_a]:
+        if keys[pygame.K_a]:
             x = -1
-        if keys [pygame.K_s]:
+        if keys[pygame.K_s]:
             y = -1
-        if keys [pygame.K_d]:
+        if keys[pygame.K_d]:
             x = 1
-        if keys [pygame.K_w]:
+        if keys[pygame.K_w]:
             y = 1
 
         motor.move([x, y])
@@ -112,5 +102,5 @@ if __name__ == "__main__":
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                 sys.exit()
+                sys.exit()
         checkKeys()
