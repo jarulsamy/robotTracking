@@ -1,10 +1,11 @@
-#import threading
+# import threading
 import urllib2
 
-#TODO: Extend threading.Thread
-class KaicongInput():
-
-    def __init__(self, callback, domain, uri_format, packet_size, user="admin", pwd="123456"):
+# TODO: Extend threading.Thread
+class KaicongInput:
+    def __init__(
+        self, callback, domain, uri_format, packet_size, user="admin", pwd="123456"
+    ):
         """
         domain:   Camera IP address or web domain
                       (e.g. 385345.kaicong.info)
