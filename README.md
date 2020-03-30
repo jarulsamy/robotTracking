@@ -3,17 +3,14 @@
 Using OpenCV2 and Numpy to track a Scribbler 2 robot. A raspberry pi with a camera is used to locate and track the robot.
 The ultimate objective of this script is to be able to click somewhere within a window and have the robot move to that location based on alternate color space tracking.
 
-Table of Contents
-=================
-
-      * [Robot Tracking](#robot-tracking)
-      * [Getting Started](#getting-started)
-      * [Prerequisites](#prerequisites)
-      * [Raspberry Pi Setup](#raspberry-pi-setup)
-      * [Changing Camera Properties](#changing-camera-properties)
-      * [Usage](#usage)
-      * [Result](#result)
-      * [Support](#support)
+### Table of Contents
+* [Getting Started](#getting-started)
+* [Prerequisites](#prerequisites)
+* [Raspberry Pi Setup](#raspberry-pi-setup)
+* [Changing Camera Properties](#changing-camera-properties)
+* [Usage](#usage)
+* [Result](#result)
+* [Support](#support)
 
 ## Getting Started
 
