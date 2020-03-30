@@ -1,12 +1,10 @@
-from img import ImageThread
-from img import mask
-from img import calibrate
-from driver import orient
 import time
 
 import cv2
-# import numpy as np
-
+from driver import orient
+from img import calibrate
+from img import ImageThread
+from img import mask
 
 if __name__ == "__main__":
     URL = "http://Zeta.lan:8000/stream.mjpg"
@@ -43,8 +41,7 @@ if __name__ == "__main__":
             if calibrate is None:
                 print("Calibrate first!")
             else:
-                ret, front_coords = orient(
-                    image_thread, "frame", calibration, "COM5")
+                ret, front_coords = orient(image_thread, "frame", calibration, "COM5")
                 if ret != 0:
                     image_thread.stop()
                     exit(0)
